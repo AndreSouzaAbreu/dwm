@@ -149,9 +149,9 @@ static Key keys[] = {
   { MODKEY,             XK_0,     view,      {.ui = ~0 } },
   { MODKEY|ShiftMask,   XK_0,     tag,       {.ui = ~0 } },
   { MODKEY,             XK_minus, spawn,      SHCMD("light -U 5") },
-  { MODKEY|ShiftMask,   XK_minus, spawn,      SHCMD("pamixer --allow-boost -d 5") },
+  { MODKEY|ShiftMask,   XK_minus, spawn,      SHCMD("pamixer --allow-boost -d 5; pkill --signal 10 dwmblocks") },
   { MODKEY,             XK_equal, spawn,      SHCMD("light -A 5") },
-  { MODKEY|ShiftMask,   XK_equal, spawn,      SHCMD("pamixer --allow-boost -i 5") },
+  { MODKEY|ShiftMask,   XK_equal, spawn,      SHCMD("pamixer --allow-boost -i 5; pkill --signal 10 dwmblocks") },
   { MODKEY,             XK_Tab,   view,       {0} },
   { MODKEY,             XK_q,     killclient, {0} },
   { MODKEY,             XK_w,     spawn,      SHCMD(BROWSER) },
@@ -159,7 +159,8 @@ static Key keys[] = {
   { MODKEY,             XK_r,     spawn,      SHCMD(TERMINAL " -e ranger") },
   { MODKEY,             XK_v,     spawn,      SHCMD(TERMINAL " -e vim") },
   { MODKEY,             XK_d,     spawn,      SHCMD("dmenu_run") },
-  { MODKEY|ShiftMask,   XK_l,     spawn,      SHCMD("slock") },
+  { MODKEY,             XK_p,     spawn,      SHCMD("passmenu") },
+  { MODKEY|ShiftMask,   XK_l,     spawn,      SHCMD("slock && pamixer ") },
 
   /* layouts */
   { MODKEY,             XK_t,     setlayout,	    {.v = &layouts[0]} }, /* tile */
@@ -216,9 +217,11 @@ static Key keys[] = {
   { 0,  XF86XK_Launch1,           spawn,    SHCMD("xset dpms force off") },
   { 0,  XF86XK_MonBrightnessUp,   spawn,    SHCMD("light -A 5") },
   { 0,  XF86XK_MonBrightnessDown, spawn,    SHCMD("light -U 5") },
+  { 0,  XF86XK_MonBrightnessUp,   spawn,    SHCMD("light -A 5") },
+  { 0,  XF86XK_MonBrightnessDown, spawn,    SHCMD("light -U 5") },
   { 0,  XF86XK_WWW,               spawn,    SHCMD(BROWSER) },
   { 0,  XF86XK_DOS,               spawn,    SHCMD(TERMINAL) },
-  { 0,  XF86XK_AudioMute,         spawn,    SHCMD("pamixer -t; kill -4 $(pidof dwmblocks)") },
+  { 0,  XF86XK_AudioMute,         spawn,    SHCMD("pamixer -t; pkill --signal 10 dwmblocks") },
   { 0,  XF86XK_AudioRaiseVolume,  spawn,    SHCMD("pamixer --allow-boost -i 5") },
   { 0,  XF86XK_AudioLowerVolume,  spawn,    SHCMD("pamixer --allow-boost -d 5") },
   { 0,  XF86XK_AudioMicMute,      spawn,    SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle") },
@@ -270,8 +273,6 @@ static Button buttons[] = {
   { ClkStatusText,  0,          Button1,  sigdwmblocks,   {.i = 1} },
   { ClkStatusText,  0,          Button2,  sigdwmblocks,   {.i = 2} },
   { ClkStatusText,  0,          Button3,  sigdwmblocks,   {.i = 3} },
-  { ClkStatusText,  0,          Button4,  sigdwmblocks,   {.i = 4} },
-  { ClkStatusText,  0,          Button5,  sigdwmblocks,   {.i = 5} },
   { ClkStatusText,  ShiftMask,  Button1,  sigdwmblocks,   {.i = 6} },
 #endif
   { ClkClientWin,   MODKEY,     Button1,  movemouse,    {0} },
