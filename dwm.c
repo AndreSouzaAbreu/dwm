@@ -2302,10 +2302,32 @@ updatestatus(void)
 void
 updatetitle(Client *c)
 {
-    if (!gettextprop(c->win, netatom[NetWMName], c->name, sizeof c->name))
-        gettextprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
-    if (c->name[0] == '\0') /* hack to mark broken clients */
-        strcpy(c->name, broken);
+	int len, i, newlen;
+	char *newname;
+	if (!gettextprop(c->win, netatom[NetWMName], c->name, sizeof c->name)) {
+		gettextprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
+	}
+	len = strlen(c->name);
+	newlen = 0;
+	for (i = len - 1; i >= 0; i--) {
+		if (c->name[i] == '-') {
+			if (i + 1 < len && c->name[i + 1] == ' ') {
+				newlen -= 1;
+			}
+			break;
+		}
+		newlen += 1;
+	}
+	newname = malloc((newlen + 1) * sizeof(char));
+	for (i = 0; i < newlen; i++) {
+		newname[i] = c->name[len - newlen + i];
+	}
+	newname[newlen] = '\0';
+	strcpy(c->name, newname);
+	free(newname);
+	if (c->name[0] == '\0') {/* hack to mark broken clients */
+		strcpy(c->name, broken);
+	}
 }
 
 void
