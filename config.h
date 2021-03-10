@@ -1,6 +1,6 @@
 /* Constants */
-#define TERMINAL "alacritty"
-#define TERMCLASS "terminal"
+#define TERMINAL "termite"
+#define TERMCLASS "Termite"
 #define BROWSER "qutebrowser"
 
 /* appearance */
@@ -85,8 +85,8 @@ static const Layout layouts[] = {
   { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
   { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 #define STACKKEYS(MOD,ACTION) \
-  { MOD,  XK_j, ACTION##stack,	{.i = INC(+1) } }, \
-  { MOD,  XK_k, ACTION##stack,	{.i = INC(-1) } }, \
+  { MOD,  XK_j, ACTION##stack,  {.i = INC(+1) } }, \
+  { MOD,  XK_k, ACTION##stack,  {.i = INC(-1) } }, \
   { MOD,  XK_v, ACTION##stack,  {.i = 0 } }, \
   /* { MOD, XK_grave, ACTION##stack, {.i = PREVSEL } }, \ */
   /* { MOD, XK_a,     ACTION##stack, {.i = 1 } }, \ */
@@ -154,23 +154,24 @@ static Key keys[] = {
   { MODKEY|ShiftMask,   XK_equal, spawn,      SHCMD("pamixer --allow-boost -i 5; pkill --signal 10 dwmblocks") },
   { MODKEY,             XK_Tab,   view,       {0} },
   { MODKEY,             XK_q,     killclient, {0} },
-  { MODKEY,             XK_w,     spawn,      SHCMD(BROWSER) },
   { MODKEY,             XK_e,     spawn,      SHCMD(TERMINAL " -e neomutt") },
   { MODKEY,             XK_r,     spawn,      SHCMD(TERMINAL " -e ranger") },
   { MODKEY,             XK_v,     spawn,      SHCMD(TERMINAL " -e vim") },
+  { MODKEY,             XK_w,     spawn,      SHCMD(BROWSER) },
+  { MODKEY,             XK_c,     spawn,      SHCMD("clipmenu") },
   { MODKEY,             XK_d,     spawn,      SHCMD("dmenu_run") },
-  { MODKEY,             XK_p,     spawn,      SHCMD("passmenu") },
-  { MODKEY|ShiftMask,   XK_l,     spawn,      SHCMD("slock && pamixer ") },
+  { MODKEY|ShiftMask,   XK_l,     spawn,      SHCMD("slock && pamixer --mute") },
+  { MODKEY,             XK_p,     spawn,      SHCMD("clipctl disable && passmenu; clipctl enable") },
 
   /* layouts */
-  { MODKEY,             XK_t,     setlayout,	    {.v = &layouts[0]} }, /* tile */
-  { MODKEY|ShiftMask,   XK_t,     setlayout,	    {.v = &layouts[1]} }, /* bstack */
-  { MODKEY,             XK_y,     setlayout,	    {.v = &layouts[2]} }, /* spiral */
-  { MODKEY|ShiftMask,   XK_y,     setlayout,	    {.v = &layouts[3]} }, /* dwindle */
-  { MODKEY,             XK_u,     setlayout,	    {.v = &layouts[4]} }, /* deck */
-  { MODKEY|ShiftMask,   XK_u,     setlayout,	    {.v = &layouts[5]} }, /* monocle */
-  { MODKEY,             XK_i,     setlayout,	    {.v = &layouts[6]} }, /* centeredmaster */
-  { MODKEY|ShiftMask,   XK_i,     setlayout,	    {.v = &layouts[7]} }, /* centeredfloatingmaster */
+  { MODKEY,             XK_t,     setlayout,      {.v = &layouts[0]} }, /* tile */
+  { MODKEY|ShiftMask,   XK_t,     setlayout,      {.v = &layouts[1]} }, /* bstack */
+  { MODKEY,             XK_y,     setlayout,      {.v = &layouts[2]} }, /* spiral */
+  { MODKEY|ShiftMask,   XK_y,     setlayout,      {.v = &layouts[3]} }, /* dwindle */
+  { MODKEY,             XK_u,     setlayout,      {.v = &layouts[4]} }, /* deck */
+  { MODKEY|ShiftMask,   XK_u,     setlayout,      {.v = &layouts[5]} }, /* monocle */
+  { MODKEY,             XK_i,     setlayout,      {.v = &layouts[6]} }, /* centeredmaster */
+  { MODKEY|ShiftMask,   XK_i,     setlayout,      {.v = &layouts[7]} }, /* centeredfloatingmaster */
   { MODKEY,             XK_o,     incnmaster,     {.i = +1 } },
   { MODKEY|ShiftMask,   XK_o,     incnmaster,     {.i = -1 } },
   { MODKEY,             XK_a,     togglegaps,     {0} },
@@ -217,11 +218,9 @@ static Key keys[] = {
   { 0,  XF86XK_Launch1,           spawn,    SHCMD("xset dpms force off") },
   { 0,  XF86XK_MonBrightnessUp,   spawn,    SHCMD("light -A 5") },
   { 0,  XF86XK_MonBrightnessDown, spawn,    SHCMD("light -U 5") },
-  { 0,  XF86XK_MonBrightnessUp,   spawn,    SHCMD("light -A 5") },
-  { 0,  XF86XK_MonBrightnessDown, spawn,    SHCMD("light -U 5") },
   { 0,  XF86XK_WWW,               spawn,    SHCMD(BROWSER) },
   { 0,  XF86XK_DOS,               spawn,    SHCMD(TERMINAL) },
-  { 0,  XF86XK_AudioMute,         spawn,    SHCMD("pamixer -t; pkill --signal 10 dwmblocks") },
+  { 0,  XF86XK_AudioMute,         spawn,    SHCMD("pamixer --toggle-mute; pkill --signal 10 dwmblocks") },
   { 0,  XF86XK_AudioRaiseVolume,  spawn,    SHCMD("pamixer --allow-boost -i 5") },
   { 0,  XF86XK_AudioLowerVolume,  spawn,    SHCMD("pamixer --allow-boost -d 5") },
   { 0,  XF86XK_AudioMicMute,      spawn,    SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle") },
