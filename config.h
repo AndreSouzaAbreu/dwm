@@ -77,7 +77,8 @@ static const Layout layouts[] = {
   { ">M>",  centeredfloatingmaster }, /* Same but master floats */
   { "><>",  NULL },                   /* no layout function means floating behavior */
   { NULL,   NULL },
-  { "HHH",  grid },                   /* same size */
+  { "HHH",  grid },                   /* vertical grid of same size clients */
+  { "###",  horizgrid },              /* horizontal grid of same size clients */
 };
 
 /* key definitions */
@@ -203,6 +204,7 @@ static Key keys[] = {
   { MODKEY,           XK_i,  setlayout,      {.v = &layouts[6]} }, /* centeredmaster */
   { MODKEY|ShiftMask, XK_i,  setlayout,      {.v = &layouts[7]} }, /* centeredfloatingmaster */
   { MODKEY,           XK_g,  setlayout,      {.v = &layouts[10]} }, /* grid */
+  { MODKEY|ShiftMask, XK_g,  setlayout,      {.v = &layouts[11]} }, /* grid */
   { MODKEY,           XK_o,  incnmaster,     {.i = +1 } },
   { MODKEY|ShiftMask, XK_o,  incnmaster,     {.i = -1 } },
   /* { MODKEY,           XK_g,  togglegaps,     {0} }, */
