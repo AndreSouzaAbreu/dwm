@@ -77,6 +77,7 @@ static const Layout layouts[] = {
   { ">M>",  centeredfloatingmaster }, /* Same but master floats */
   { "><>",  NULL },                   /* no layout function means floating behavior */
   { NULL,   NULL },
+  { "HHH",  grid },                   /* same size */
 };
 
 /* key definitions */
@@ -201,10 +202,11 @@ static Key keys[] = {
   { MODKEY|ShiftMask, XK_u,  setlayout,      {.v = &layouts[5]} }, /* monocle */
   { MODKEY,           XK_i,  setlayout,      {.v = &layouts[6]} }, /* centeredmaster */
   { MODKEY|ShiftMask, XK_i,  setlayout,      {.v = &layouts[7]} }, /* centeredfloatingmaster */
+  { MODKEY,           XK_g,  setlayout,      {.v = &layouts[10]} }, /* grid */
   { MODKEY,           XK_o,  incnmaster,     {.i = +1 } },
   { MODKEY|ShiftMask, XK_o,  incnmaster,     {.i = -1 } },
-  { MODKEY,           XK_g,  togglegaps,     {0} },
-  { MODKEY|ShiftMask, XK_g,  defaultgaps,    {0} },
+  /* { MODKEY,           XK_g,  togglegaps,     {0} }, */
+  /* { MODKEY|ShiftMask, XK_g,  defaultgaps,    {0} }, */
   { MODKEY,           XK_s,  togglesticky,   {0} },
   { MODKEY,           XK_f,  togglefullscr,  {0} },
   { MODKEY|ShiftMask, XK_f,  setlayout,      {.v = &layouts[8]} },
@@ -217,7 +219,8 @@ static Key keys[] = {
   { MODKEY,           XK_h,           setmfact,       {.f = -0.05} },
   { MODKEY,           XK_l,           setmfact,       {.f = +0.05} },
   { MODKEY,           XK_semicolon,   shiftview,      { .i = 1 } },
-  { MODKEY|ShiftMask, XK_semicolon,   shifttag,       { .i = 1 } },
+  { MODKEY|ShiftMask, XK_semicolon,   shiftview,       { .i = -1 } },
+  /* { MODKEY|ShiftMask, XK_semicolon,   shifttag,       { .i = 1 } }, */
   { MODKEY,           XK_apostrophe,  togglescratch,  {.ui = 1} },
   { MODKEY,           XK_Return,      spawn,          {.v = termcmd } },
   { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} },
