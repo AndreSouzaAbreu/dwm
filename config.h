@@ -64,6 +64,7 @@ static int attachbelow = 1;    /* 1 means attach at the end */
 
 #include "vanitygaps.c"
 #include "tagall.c"
+#include "maximize.c"
 
 static const Layout layouts[] = {
   /* symbol arrange                   function */
@@ -227,6 +228,10 @@ static Key keys[] = {
   { MODKEY,           XK_Return,      spawn,          {.v = termcmd } },
   { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} },
 
+  { MODKEY|ControlMask, XK_k,           togglehorizontalmax, {0} },
+  { MODKEY|ControlMask, XK_j,           toggleverticalmax,   {0} },
+  { MODKEY|ControlMask, XK_m,           togglemaximize,      {0} },
+
   /* gaps */
   { MODKEY,           XK_z,           incrgaps,       {.i = +3 } },
   { MODKEY,           XK_x,           incrgaps,       {.i = -3 } },
@@ -255,7 +260,6 @@ static Key keys[] = {
 
   /* other stuff */
   { MODKEY,    XK_F11,   spawn, SHCMD("record-webcam") },
-
 
   { 0,  XF86XK_WWW,          spawn, SHCMD(BROWSER) },
   { 0,  XF86XK_DOS,          spawn, SHCMD(TERMINAL) },
