@@ -56,17 +56,19 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static float mfact     = 0.55;  /* factor of master area size [0.05..0.95] */
-static int nmaster     = 1;     /* number of clients in master area */
+static float mfact = 0.80;  /* factor of master area size [0.05..0.95] */
+static int nmaster = 1;     /* number of clients in master area */
 static int resizehints = 1;     /* 1 means respect size hints in tiled resizals */
+static int attachbelow = 1;    /* 1 means attach at the end */
 #define FORCE_VSPLIT 1          /* nrowgrid layout: force two clients to always split vertically */
 
 #include "vanitygaps.c"
+#include "tagall.c"
 
 static const Layout layouts[] = {
   /* symbol arrange                   function */
-  { "[]=",  tile },                   /* Default: Master on left, slaves on right */
   { "TTT",  bstack },                 /* Master on top, slaves on bottom */
+  { "[]=",  tile },                   /* Master on left, slaves on right */
   { "[@]",  spiral },                 /* Fibonacci spiral */
   { "[\\]", dwindle },                /* Decreasing in size right and leftward */
   { "[D]",  deck },                   /* Master on left, slaves in monocle-like mode on right */
@@ -159,6 +161,20 @@ static Key keys[] = {
   { 0,      XF86XK_MonBrightnessDown, spawn, SHCMD("light -U 5") },
   { MODKEY, XK_minus,                 spawn, SHCMD("light -U 5") },
   { MODKEY, XK_equal,                 spawn, SHCMD("light -A 5") },
+
+  /* tagall */
+  { MODKEY|ShiftMask,     XK_F1,      tagall,        {.v = "1"} }, \
+  { MODKEY|ShiftMask,     XK_F2,      tagall,        {.v = "2"} }, \
+  { MODKEY|ShiftMask,     XK_F3,      tagall,        {.v = "3"} }, \
+  { MODKEY|ShiftMask,     XK_F4,      tagall,        {.v = "4"} }, \
+  { MODKEY|ShiftMask,     XK_F5,      tagall,        {.v = "5"} }, \
+  { MODKEY|ShiftMask,     XK_F6,      tagall,        {.v = "6"} }, \
+  { MODKEY|ShiftMask,     XK_F7,      tagall,        {.v = "7"} }, \
+  { MODKEY|ShiftMask,     XK_F8,      tagall,        {.v = "8"} }, \
+  { MODKEY|ShiftMask,     XK_F9,      tagall,        {.v = "9"} }, \
+
+  /* toggle attach below */
+  { MODKEY|ShiftMask,     XK_Tab,     toggleAttachBelow, {0} },
 
   /* commands */
   /* { MODKEY,            XK_v,  spawn,  SHCMD(TERMINAL " -e vim") }, */
