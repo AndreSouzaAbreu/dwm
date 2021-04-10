@@ -2,6 +2,7 @@
 #define TERMINAL "termite"
 #define TERMCLASS "Termite"
 #define BROWSER "qutebrowser"
+#define AltMask Mod1Mask
 
 /* appearance */
 static unsigned int borderpx  = 3;  /* border pixel of windows */
@@ -53,29 +54,43 @@ static const Rule rules[] = {
 /* layout(s) */
 static float mfact = 0.80;  /* factor of master area size [0.05..0.95] */
 static int nmaster = 1;     /* number of clients in master area */
-static int resizehints = 1;     /* 1 means respect size hints in tiled resizals */
-static int attachbelow = 1;    /* 1 means attach at the end */
-#define FORCE_VSPLIT 1          /* nrowgrid layout: force two clients to always split vertically */
+static int resizehints = 1; /* 1 means respect size hints in tiled resizals */
+static int attachbelow = 1; /* 1 means attach at the end */
+#define FORCE_VSPLIT 1      /* nrowgrid layout: force two clients to always split vertically */
 
 #include "layouts.c"
 #include "tagall.c"
 #include "maximize.c"
 
+static const Layout
+  layout_bstack = { "TTT", bstack },
+  layout_tile = { "[]=", tile },
+  layout_spiral = { "[@]", spiral },
+  layout_dwindle = { "[\\]",dwindle },
+  layout_deck = { "[D]", deck },
+  layout_monocle = { "[M]", monocle },
+  layout_centeredmaster = { "|M|", centeredmaster },
+  layout_centeredfloatingmaster = { ">M>", centeredfloatingmaster },
+  layout_floating = { "><>", NULL },
+  layout_grid = { "HHH", grid },
+  layout_horizgrid = { "###", horizgrid },
+  layout_tatami = { "|+|",  tatami },
+  layout_bstackhoriz = { "===",  bstackhoriz };
+
 static const Layout layouts[] = {
-  /* symbol arrange                   function */
-  { "TTT",  bstack },                 /* Master on top, slaves on bottom */
-  { "[]=",  tile },                   /* Master on left, slaves on right */
-  { "[@]",  spiral },                 /* Fibonacci spiral */
-  { "[\\]", dwindle },                /* Decreasing in size right and leftward */
-  { "[D]",  deck },                   /* Master on left, slaves in monocle-like mode on right */
-  { "[M]",  monocle },                /* All windows on top of eachother */
-  { "|M|",  centeredmaster },         /* Master in middle, slaves on sides */
-  { ">M>",  centeredfloatingmaster }, /* Same but master floats */
-  { "><>",  NULL },                   /* no layout function means floating behavior */
-  { "HHH",  grid },                   /* vertical grid of same size clients */
-  { "###",  horizgrid },              /* horizontal grid of same size clients */
-  { "|+|",  tatami },
-	{ "===",  bstackhoriz },
+  layout_bstack,
+  layout_bstackhoriz,
+  layout_tile,
+  layout_tatami,
+  layout_dwindle,
+  layout_spiral,
+  layout_monocle,
+  layout_deck,
+  layout_centeredmaster,
+  layout_centeredfloatingmaster,
+  layout_grid,
+  layout_horizgrid,
+  layout_floating,
 };
 
 /* key definitions */
@@ -158,15 +173,15 @@ static Key keys[] = {
   { MODKEY, XK_equal,                 spawn, SHCMD("light -A 5") },
 
   /* tagall keybindings  */
-  { MODKEY|ShiftMask,     XK_F1,      tagall,        {.v = "1"} }, \
-  { MODKEY|ShiftMask,     XK_F2,      tagall,        {.v = "2"} }, \
-  { MODKEY|ShiftMask,     XK_F3,      tagall,        {.v = "3"} }, \
-  { MODKEY|ShiftMask,     XK_F4,      tagall,        {.v = "4"} }, \
-  { MODKEY|ShiftMask,     XK_F5,      tagall,        {.v = "5"} }, \
-  { MODKEY|ShiftMask,     XK_F6,      tagall,        {.v = "6"} }, \
-  { MODKEY|ShiftMask,     XK_F7,      tagall,        {.v = "7"} }, \
-  { MODKEY|ShiftMask,     XK_F8,      tagall,        {.v = "8"} }, \
-  { MODKEY|ShiftMask,     XK_F9,      tagall,        {.v = "9"} }, \
+  { MODKEY|ShiftMask,     XK_F1,      tagall,        {.v = "1"} },
+  { MODKEY|ShiftMask,     XK_F2,      tagall,        {.v = "2"} },
+  { MODKEY|ShiftMask,     XK_F3,      tagall,        {.v = "3"} },
+  { MODKEY|ShiftMask,     XK_F4,      tagall,        {.v = "4"} },
+  { MODKEY|ShiftMask,     XK_F5,      tagall,        {.v = "5"} },
+  { MODKEY|ShiftMask,     XK_F6,      tagall,        {.v = "6"} },
+  { MODKEY|ShiftMask,     XK_F7,      tagall,        {.v = "7"} },
+  { MODKEY|ShiftMask,     XK_F8,      tagall,        {.v = "8"} },
+  { MODKEY|ShiftMask,     XK_F9,      tagall,        {.v = "9"} },
 
   /* toggle attach below */
   { MODKEY|ShiftMask,     XK_Tab,     toggleAttachBelow, {0} },
@@ -187,28 +202,36 @@ static Key keys[] = {
   { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
   { MODKEY|ShiftMask,   XK_p,  spawn,  SHCMD("menu-otp") },
 
-  /* screen temperature color */
+  /* control screen temperature color */
   { MODKEY,           XK_F1,  spawn,  SHCMD("screen-color dec 500") },
   { MODKEY,           XK_F2,  spawn,  SHCMD("screen-color inc 500") },
 
   /* layouts */
-  { MODKEY,             XK_t,  setlayout,      {.v = &layouts[0]} },
-  { MODKEY|ShiftMask,   XK_t,  setlayout,      {.v = &layouts[1]} },
-  { MODKEY,             XK_y,  setlayout,      {.v = &layouts[2]} },
-  { MODKEY|ShiftMask,   XK_y,  setlayout,      {.v = &layouts[3]} },
-  { MODKEY,             XK_u,  setlayout,      {.v = &layouts[4]} },
-  { MODKEY|ShiftMask,   XK_u,  setlayout,      {.v = &layouts[5]} },
-  { MODKEY,             XK_i,  setlayout,      {.v = &layouts[6]} },
-  { MODKEY|ShiftMask,   XK_i,  setlayout,      {.v = &layouts[7]} },
-  { MODKEY,             XK_g,  setlayout,      {.v = &layouts[10]} },
-  { MODKEY|ShiftMask,   XK_g,  setlayout,      {.v = &layouts[11]} },
-  { MODKEY|ControlMask, XK_g,  setlayout,      {.v = &layouts[12]} },
-  { MODKEY|ControlMask, XK_i,  setlayout,      {.v = &layouts[13]} },
-  { MODKEY,             XK_o,  incnmaster,     {.i = +1 } },
-  { MODKEY|ShiftMask,   XK_o,  incnmaster,     {.i = -1 } },
-  { MODKEY,           XK_s,  togglesticky,   {0} },
-  { MODKEY,           XK_f,  togglefullscr,  {0} },
-  { MODKEY|ShiftMask, XK_f,  setlayout,      {.v = &layouts[8]} },
+  { MODKEY,             XK_t,  setlayout,  {.v = &layout_tile } },
+  { MODKEY|ShiftMask,   XK_t,  setlayout,  {.v = &layout_tatami } },
+  { MODKEY,             XK_y,  setlayout,  {.v = &layout_dwindle } },
+  { MODKEY|ShiftMask,   XK_y,  setlayout,  {.v = &layout_spiral } },
+  { MODKEY,             XK_u,  setlayout,  {.v = &layout_monocle } },
+  { MODKEY|ShiftMask,   XK_u,  setlayout,  {.v = &layout_deck } },
+  { MODKEY,             XK_i,  setlayout,  {.v = &layout_centeredmaster } },
+  { MODKEY|ShiftMask,   XK_i,  setlayout,  {.v = &layout_centeredfloatingmaster } },
+  { MODKEY,             XK_g,  setlayout,  {.v = &layout_grid } },
+  { MODKEY|ShiftMask,   XK_g,  setlayout,  {.v = &layout_horizgrid } },
+  { MODKEY,             XK_s,  setlayout,  {.v = &layout_bstack } },
+  { MODKEY|ShiftMask,   XK_s,  setlayout,  {.v = &layout_bstackhoriz } },
+  { MODKEY|ShiftMask,   XK_f,  setlayout,  {.v = &layout_floating } },
+
+  /* change the layout of a single window */
+  { MODKEY,             XK_f,     togglefullscr,  {0} },
+  { MODKEY|ControlMask, XK_s,     togglesticky,   {0} },
+  { MODKEY|ShiftMask,   XK_space, togglefloating, {0} },
+
+  /* toggle whether focused client is in master area */
+  { MODKEY,             XK_space, zoom,           {0} },
+
+  /* change the number of windows in master area */
+  { MODKEY|AltMask,    XK_minus,  incnmaster,     {.i = -1 } },
+  { MODKEY|AltMask,    XK_equal,  incnmaster,     {.i = +1 } },
 
   /* navigation */
   { MODKEY,           XK_j,           focusstack,     {.i = INC(+1) } },
@@ -220,14 +243,15 @@ static Key keys[] = {
   { MODKEY,           XK_semicolon,   shiftview,      { .i = 1 } },
   { MODKEY|ShiftMask, XK_semicolon,   shiftview,      { .i = -1 } },
   /* { MODKEY|ShiftMask, XK_semicolon,   shifttag,       { .i = 1 } }, */
+
   { MODKEY,           XK_apostrophe,  togglescratch,  {.ui = 1} },
   { MODKEY,           XK_Return,      spawn,          {.v = termcmd } },
   { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} },
 
   /* keybindings for resizing floating windows */
-  { MODKEY|ControlMask, XK_k,           togglehorizontalmax, {0} },
-  { MODKEY|ControlMask, XK_j,           toggleverticalmax,   {0} },
-  { MODKEY|ControlMask, XK_m,           togglemaximize,      {0} },
+  { MODKEY|ControlMask, XK_k,         togglehorizontalmax, {0} },
+  { MODKEY|ControlMask, XK_j,         toggleverticalmax,   {0} },
+  { MODKEY|ControlMask, XK_m,         togglemaximize,      {0} },
 
   /* bar */
   { MODKEY,           XK_b,           togglebar,      {0} },
@@ -244,8 +268,6 @@ static Key keys[] = {
   /* { MODKEY|ShiftMask,   XK_Page_Up,   shifttag,   { .i = -1 } }, */
   /* { MODKEY|ShiftMask,   XK_Page_Down, shifttag,   { .i = +1 } }, */
 
-  { MODKEY,           XK_space, zoom,           {0} },
-  { MODKEY|ShiftMask, XK_space, togglefloating, {0} },
 
   /* keybindings for taking screenshots */
   { 0,         XK_Print, spawn, SHCMD("flameshot gui") },
