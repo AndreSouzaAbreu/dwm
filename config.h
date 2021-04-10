@@ -1,8 +1,8 @@
 /* Constants */
+#define MODKEY Mod4Mask
 #define TERMINAL "termite"
 #define TERMCLASS "Termite"
 #define BROWSER "qutebrowser"
-#define AltMask Mod1Mask
 
 /* appearance */
 static unsigned int borderpx  = 3;  /* border pixel of windows */
@@ -27,8 +27,8 @@ typedef struct {
   const char *name;
   const void *cmd;
 } Sp;
-const char *spcmd1[] = {TERMINAL, "-n", "spterm", "-g", "120x34", NULL };
-const char *spcmd2[] = {TERMINAL, "-n", "spcalc", "-f", "monospace:size=16", "-g", "50x20", "-e", "bc", "-lq", NULL };
+const char *spcmd1[] = {"st", "-g", "120x34", NULL };
+const char *spcmd2[] = {"st", "-f", "monospace:size=16", "-g", "50x20", "-e", "bc", "-lq", NULL };
 static Sp scratchpads[] = {
   /* name    cmd  */
   {"spterm", spcmd1},
@@ -39,10 +39,6 @@ static Sp scratchpads[] = {
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 static const Rule rules[] = {
-  /* xprop(1):
-   *  WM_CLASS(STRING) = instance, class
-   *  WM_NAME(STRING) = title
-  */
   /* class      instance    title           tags mask  isfloating   isterminal  noswallow  monitor */
   { "Gimp",     NULL,       NULL,           1 << 8,     0,           0,         0,         -1 },
   { TERMCLASS,  NULL,       NULL,           0,          0,           1,         0,         -1 },
@@ -52,7 +48,8 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static float mfact = 0.80;  /* factor of master area size [0.05..0.95] */
+static const float default_mfact = 0.80;
+static float mfact = default_mfact;  /* factor of master area size [0.05..0.95] */
 static int nmaster = 1;     /* number of clients in master area */
 static int resizehints = 1; /* 1 means respect size hints in tiled resizals */
 static int attachbelow = 1; /* 1 means attach at the end */
@@ -94,7 +91,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod4Mask
+#define AltMask Mod1Mask
 #define TAGKEYS(KEY,TAG) \
   { MODKEY,                       KEY, view,       {.ui = 1 << TAG} }, \
   { MODKEY|ControlMask,           KEY, toggleview, {.ui = 1 << TAG} }, \
@@ -103,10 +100,6 @@ static const Layout layouts[] = {
 #define STACKKEYS(MOD,ACTION) \
   { MOD,  XK_j, ACTION##stack,  {.i = INC(+1) } }, \
   { MOD,  XK_k, ACTION##stack,  {.i = INC(-1) } }, \
-  /* { MOD, XK_grave, ACTION##stack, {.i = PREVSEL } }, \ */
-  /* { MOD, XK_a,     ACTION##stack, {.i = 1 } }, \ */
-  /* { MOD, XK_z,     ACTION##stack, {.i = 2 } }, \ */
-  /* { MOD, XK_x,     ACTION##stack, {.i = -1 } }, */
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -114,24 +107,22 @@ static const Layout layouts[] = {
 /* commands */
 static const char *termcmd[]  = { TERMINAL, NULL };
 
-/*
- * Xresources preferences to load at startup
- */
+/* Xresources preferences to load at startup */
 ResourcePref resources[] = {
-  { "color0",         STRING,   &normbordercolor },
-  { "color8",         STRING,   &selbordercolor },
-  { "color0",         STRING,   &normbgcolor },
-  { "color4",         STRING,   &normfgcolor },
-  { "color0",         STRING,   &selfgcolor },
-  { "color4",         STRING,   &selbgcolor },
-  { "borderpx",       INTEGER,  &borderpx },
-  { "snap",           INTEGER,  &snap },
-  { "showbar",        INTEGER,  &showbar },
-  { "topbar",         INTEGER,  &topbar },
-  { "nmaster",        INTEGER,  &nmaster },
-  { "resizehints",    INTEGER,  &resizehints },
-  { "mfact",          FLOAT,    &mfact },
-  { "swallowfloating",INTEGER,  &swallowfloating },
+  { "color0",          STRING,   &normbordercolor },
+  { "color8",          STRING,   &selbordercolor },
+  { "color0",          STRING,   &normbgcolor },
+  { "color4",          STRING,   &normfgcolor },
+  { "color0",          STRING,   &selfgcolor },
+  { "color4",          STRING,   &selbgcolor },
+  { "borderpx",        INTEGER,  &borderpx },
+  { "snap",            INTEGER,  &snap },
+  { "showbar",         INTEGER,  &showbar },
+  { "topbar",          INTEGER,  &topbar },
+  { "nmaster",         INTEGER,  &nmaster },
+  { "resizehints",     INTEGER,  &resizehints },
+  { "mfact",           FLOAT,    &mfact },
+  { "swallowfloating", INTEGER,  &swallowfloating },
 };
 
 #include <X11/XF86keysym.h>
@@ -153,6 +144,7 @@ static Key keys[] = {
   { MODKEY|ShiftMask, XK_0,   tag,        {.ui = ~0 } },
   { MODKEY,           XK_Tab, view,       {0} },
   { MODKEY,           XK_q,   killclient, {0} },
+  { MODKEY|ShiftMask, XK_q,   quit,       {0} },
 
   /* keybindings for keyboards with volume keys */
   { 0,          XF86XK_AudioMute,  spawn,  SHCMD("volumectl toogle-mute") },
@@ -187,9 +179,9 @@ static Key keys[] = {
   { MODKEY|ShiftMask,     XK_Tab,     toggleAttachBelow, {0} },
 
   /* keybingins for resizing windows in stack area */
-  { MODKEY,     XK_z,      setcfact,       {.f = +0.25} },
-  { MODKEY,     XK_x,      setcfact,       {.f = -0.25} },
-  { MODKEY,     XK_a,      setcfact,       {.f =  0.00} },
+  { MODKEY|AltMask,     XK_l,      setcfact,       {.f = +0.25} },
+  { MODKEY|AltMask,     XK_h,      setcfact,       {.f = -0.25} },
+  { MODKEY|AltMask,     XK_n,      setcfact,       {.f =  0.00} },
 
   /* commands */
   { MODKEY,             XK_v,  spawn,  SHCMD(TERMINAL " -e vim") },
@@ -229,24 +221,38 @@ static Key keys[] = {
   /* toggle whether focused client is in master area */
   { MODKEY,             XK_space, zoom,           {0} },
 
-  /* change the number of windows in master area */
+  /* change the number of clients in master area */
   { MODKEY|AltMask,    XK_minus,  incnmaster,     {.i = -1 } },
   { MODKEY|AltMask,    XK_equal,  incnmaster,     {.i = +1 } },
 
-  /* navigation */
-  { MODKEY,           XK_j,           focusstack,     {.i = INC(+1) } },
-  { MODKEY,           XK_k,           focusstack,     {.i = INC(-1) } },
+  /* navigate through clients  */
+  { MODKEY,  XK_j,     focusstack,  {.i = INC(+1) } },
+  { MODKEY,  XK_k,     focusstack,  {.i = INC(-1) } },
+  { MODKEY,  XK_Right, focusstack,  {.i = INC(+1) } },
+  { MODKEY,  XK_Left,  focusstack,  {.i = INC(-1) } },
+
+  /* swap client up/down */
   { MODKEY|ShiftMask, XK_j,           pushstack,      {.i = INC(+1) } },
   { MODKEY|ShiftMask, XK_k,           pushstack,      {.i = INC(-1) } },
-  { MODKEY,           XK_h,           setmfact,       {.f = -0.05} },
-  { MODKEY,           XK_l,           setmfact,       {.f = +0.05} },
-  { MODKEY,           XK_semicolon,   shiftview,      { .i = 1 } },
-  { MODKEY|ShiftMask, XK_semicolon,   shiftview,      { .i = -1 } },
-  /* { MODKEY|ShiftMask, XK_semicolon,   shifttag,       { .i = 1 } }, */
 
-  { MODKEY,           XK_apostrophe,  togglescratch,  {.ui = 1} },
+  /* resize master area */
+  { MODKEY,           XK_h,           setmfact,       {.f = -0.05 } },
+  { MODKEY,           XK_l,           setmfact,       {.f = +0.05 } },
+  { MODKEY,           XK_n,           setmfact,       {.f = default_mfact } },
+
+  /* navigate through tags */
+  { MODKEY,           XK_period,      shiftview,      {.i = +1 } },
+  { MODKEY,           XK_comma,       shiftview,      {.i = -1 } },
+  { MODKEY|ShiftMask, XK_Left,        shiftview,      {.i = -1 } },
+  { MODKEY|ShiftMask, XK_Right,       shiftview,      {.i = +1 } },
+
+  /* shift focused window to next/previous tag */
+  { MODKEY|ShiftMask, XK_period,      shifttag,       { .i = +1 } },
+  { MODKEY|ShiftMask, XK_comma,       shifttag,       { .i = -1 } },
+
   { MODKEY,           XK_Return,      spawn,          {.v = termcmd } },
-  { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} },
+  /* { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} }, */
+  /* { MODKEY,           XK_apostrophe,  togglescratch,  {.ui = 1} }, */
 
   /* keybindings for resizing floating windows */
   { MODKEY|ControlMask, XK_k,         togglehorizontalmax, {0} },
@@ -257,10 +263,6 @@ static Key keys[] = {
   { MODKEY,           XK_b,           togglebar,      {0} },
 
   /* arrow keys */
-  { MODKEY,           XK_Left,      focusstack, {.i = INC(-1) } },
-  { MODKEY|ShiftMask, XK_Left,      shiftview,  {.i = -1 } },
-  { MODKEY,           XK_Right,     focusstack, {.i = INC(+1) } },
-  { MODKEY|ShiftMask, XK_Right,     shiftview,  {.i = +1 } },
 
   /* page keys */
   { MODKEY,           XK_Page_Up,   shiftview,  { .i = -1 } },
