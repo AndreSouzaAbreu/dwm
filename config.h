@@ -65,6 +65,7 @@ static int attachbelow = 1;    /* 1 means attach at the end */
 #include "vanitygaps.c"
 #include "tagall.c"
 #include "maximize.c"
+#include "tatami.c"
 
 static const Layout layouts[] = {
   /* symbol arrange                   function */
@@ -80,6 +81,7 @@ static const Layout layouts[] = {
   { NULL,   NULL },
   { "HHH",  grid },                   /* vertical grid of same size clients */
   { "###",  horizgrid },              /* horizontal grid of same size clients */
+  { "|+|",   tatami },
 };
 
 /* key definitions */
@@ -196,18 +198,19 @@ static Key keys[] = {
   { MODKEY,           XK_F2,  spawn,  SHCMD("screen-color inc 500") },
 
   /* layouts */
-  { MODKEY,           XK_t,  setlayout,      {.v = &layouts[0]} }, /* tile */
-  { MODKEY|ShiftMask, XK_t,  setlayout,      {.v = &layouts[1]} }, /* bstack */
-  { MODKEY,           XK_y,  setlayout,      {.v = &layouts[2]} }, /* spiral */
-  { MODKEY|ShiftMask, XK_y,  setlayout,      {.v = &layouts[3]} }, /* dwindle */
-  { MODKEY,           XK_u,  setlayout,      {.v = &layouts[4]} }, /* deck */
-  { MODKEY|ShiftMask, XK_u,  setlayout,      {.v = &layouts[5]} }, /* monocle */
-  { MODKEY,           XK_i,  setlayout,      {.v = &layouts[6]} }, /* centeredmaster */
-  { MODKEY|ShiftMask, XK_i,  setlayout,      {.v = &layouts[7]} }, /* centeredfloatingmaster */
-  { MODKEY,           XK_g,  setlayout,      {.v = &layouts[10]} }, /* grid */
-  { MODKEY|ShiftMask, XK_g,  setlayout,      {.v = &layouts[11]} }, /* grid */
-  { MODKEY,           XK_o,  incnmaster,     {.i = +1 } },
-  { MODKEY|ShiftMask, XK_o,  incnmaster,     {.i = -1 } },
+  { MODKEY,             XK_t,  setlayout,      {.v = &layouts[0]} }, /* tile */
+  { MODKEY|ShiftMask,   XK_t,  setlayout,      {.v = &layouts[1]} }, /* bstack */
+  { MODKEY,             XK_y,  setlayout,      {.v = &layouts[2]} }, /* spiral */
+  { MODKEY|ShiftMask,   XK_y,  setlayout,      {.v = &layouts[3]} }, /* dwindle */
+  { MODKEY,             XK_u,  setlayout,      {.v = &layouts[4]} }, /* deck */
+  { MODKEY|ShiftMask,   XK_u,  setlayout,      {.v = &layouts[5]} }, /* monocle */
+  { MODKEY,             XK_i,  setlayout,      {.v = &layouts[6]} }, /* centeredmaster */
+  { MODKEY|ShiftMask,   XK_i,  setlayout,      {.v = &layouts[7]} }, /* centeredfloatingmaster */
+  { MODKEY,             XK_g,  setlayout,      {.v = &layouts[10]} }, /* grid */
+  { MODKEY|ShiftMask,   XK_g,  setlayout,      {.v = &layouts[11]} }, /* grid */
+  { MODKEY|ControlMask, XK_g,  setlayout,      {.v = &layouts[12]} }, /* grid */
+  { MODKEY,             XK_o,  incnmaster,     {.i = +1 } },
+  { MODKEY|ShiftMask,   XK_o,  incnmaster,     {.i = -1 } },
   /* { MODKEY,           XK_g,  togglegaps,     {0} }, */
   /* { MODKEY|ShiftMask, XK_g,  defaultgaps,    {0} }, */
   { MODKEY,           XK_s,  togglesticky,   {0} },
@@ -222,7 +225,7 @@ static Key keys[] = {
   { MODKEY,           XK_h,           setmfact,       {.f = -0.05} },
   { MODKEY,           XK_l,           setmfact,       {.f = +0.05} },
   { MODKEY,           XK_semicolon,   shiftview,      { .i = 1 } },
-  { MODKEY|ShiftMask, XK_semicolon,   shiftview,       { .i = -1 } },
+  { MODKEY|ShiftMask, XK_semicolon,   shiftview,      { .i = -1 } },
   /* { MODKEY|ShiftMask, XK_semicolon,   shifttag,       { .i = 1 } }, */
   { MODKEY,           XK_apostrophe,  togglescratch,  {.ui = 1} },
   { MODKEY,           XK_Return,      spawn,          {.v = termcmd } },

@@ -2,7 +2,7 @@
  *.rej
  larbs.pdf
  patches
- util.o
  dwm
+ util.o
  dwm.o
  drw.o
