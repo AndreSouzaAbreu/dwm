@@ -6,12 +6,7 @@
 /* appearance */
 static unsigned int borderpx  = 3;  /* border pixel of windows */
 static unsigned int snap      = 32; /* snap pixel */
-static unsigned int gappih    = 0;  /* horiz inner gap between windows */
-static unsigned int gappiv    = 0;  /* vert inner gap between windows */
-static unsigned int gappoh    = 0;  /* horiz outer gap between windows and screen edge */
-static unsigned int gappov    = 0;  /* vert outer gap between windows and screen edge */
 static int swallowfloating    = 0;  /* 1 means swallow floating windows by default */
-static int smartgaps          = 1;  /* 1 means no outer gap when there is only one window */
 static int showbar            = 1;  /* 0 means no bar */
 static int topbar             = 1;  /* 0 means bottom bar */
 static char *fonts[]          = { "monospace:size=14" };
@@ -62,10 +57,9 @@ static int resizehints = 1;     /* 1 means respect size hints in tiled resizals 
 static int attachbelow = 1;    /* 1 means attach at the end */
 #define FORCE_VSPLIT 1          /* nrowgrid layout: force two clients to always split vertically */
 
-#include "vanitygaps.c"
+#include "layouts.c"
 #include "tagall.c"
 #include "maximize.c"
-#include "tatami.c"
 
 static const Layout layouts[] = {
   /* symbol arrange                   function */
@@ -81,7 +75,8 @@ static const Layout layouts[] = {
   { NULL,   NULL },
   { "HHH",  grid },                   /* vertical grid of same size clients */
   { "###",  horizgrid },              /* horizontal grid of same size clients */
-  { "|+|",   tatami },
+  { "|+|",  tatami },
+	{ "===",  bstackhoriz },
 };
 
 /* key definitions */
@@ -122,12 +117,7 @@ ResourcePref resources[] = {
   { "nmaster",        INTEGER,  &nmaster },
   { "resizehints",    INTEGER,  &resizehints },
   { "mfact",          FLOAT,    &mfact },
-  { "gappih",         INTEGER,  &gappih },
-  { "gappiv",         INTEGER,  &gappiv },
-  { "gappoh",         INTEGER,  &gappoh },
-  { "gappov",         INTEGER,  &gappov },
   { "swallowfloating",INTEGER,  &swallowfloating },
-  { "smartgaps",      INTEGER,  &smartgaps },
 };
 
 #include <X11/XF86keysym.h>
@@ -181,6 +171,11 @@ static Key keys[] = {
   /* toggle attach below */
   { MODKEY|ShiftMask,     XK_Tab,     toggleAttachBelow, {0} },
 
+  /* cfacts*/
+  { MODKEY,     XK_z,      setcfact,       {.f = +0.25} },
+  { MODKEY,     XK_x,      setcfact,       {.f = -0.25} },
+  { MODKEY,     XK_a,      setcfact,       {.f =  0.00} },
+
   /* commands */
   /* { MODKEY,            XK_v,  spawn,  SHCMD(TERMINAL " -e vim") }, */
   { MODKEY,            XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
@@ -206,13 +201,12 @@ static Key keys[] = {
   { MODKEY|ShiftMask,   XK_u,  setlayout,      {.v = &layouts[5]} }, /* monocle */
   { MODKEY,             XK_i,  setlayout,      {.v = &layouts[6]} }, /* centeredmaster */
   { MODKEY|ShiftMask,   XK_i,  setlayout,      {.v = &layouts[7]} }, /* centeredfloatingmaster */
-  { MODKEY,             XK_g,  setlayout,      {.v = &layouts[10]} }, /* grid */
-  { MODKEY|ShiftMask,   XK_g,  setlayout,      {.v = &layouts[11]} }, /* grid */
-  { MODKEY|ControlMask, XK_g,  setlayout,      {.v = &layouts[12]} }, /* grid */
+  { MODKEY,             XK_g,  setlayout,      {.v = &layouts[10]} },
+  { MODKEY|ShiftMask,   XK_g,  setlayout,      {.v = &layouts[11]} },
+  { MODKEY|ControlMask, XK_g,  setlayout,      {.v = &layouts[12]} },
+  { MODKEY|ControlMask, XK_i,  setlayout,      {.v = &layouts[13]} },
   { MODKEY,             XK_o,  incnmaster,     {.i = +1 } },
   { MODKEY|ShiftMask,   XK_o,  incnmaster,     {.i = -1 } },
-  /* { MODKEY,           XK_g,  togglegaps,     {0} }, */
-  /* { MODKEY|ShiftMask, XK_g,  defaultgaps,    {0} }, */
   { MODKEY,           XK_s,  togglesticky,   {0} },
   { MODKEY,           XK_f,  togglefullscr,  {0} },
   { MODKEY|ShiftMask, XK_f,  setlayout,      {.v = &layouts[8]} },
@@ -234,10 +228,6 @@ static Key keys[] = {
   { MODKEY|ControlMask, XK_k,           togglehorizontalmax, {0} },
   { MODKEY|ControlMask, XK_j,           toggleverticalmax,   {0} },
   { MODKEY|ControlMask, XK_m,           togglemaximize,      {0} },
-
-  /* gaps */
-  { MODKEY,           XK_z,           incrgaps,       {.i = +3 } },
-  { MODKEY,           XK_x,           incrgaps,       {.i = -3 } },
 
   /* bar */
   { MODKEY,           XK_b,           togglebar,      {0} },
@@ -268,44 +258,6 @@ static Key keys[] = {
   { 0,  XF86XK_DOS,          spawn, SHCMD(TERMINAL) },
   { 0,  XF86XK_Launch1,      spawn, SHCMD("xset dpms force off") },
   { 0,  XF86XK_AudioMicMute, spawn, SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle") },
-
-  /* { MODKEY,              XK_Print,       spawn,  SHCMD("dmenurecord") }, */
-  /* { MODKEY|ShiftMask,    XK_Print,       spawn,  SHCMD("dmenurecord kill") }, */
-  /* { MODKEY,              XK_Delete,      spawn,  SHCMD("dmenurecord kill") }, */
-  /* { MODKEY,              XK_Scroll_Lock, spawn,  SHCMD("killall screenkey || screenkey &") }, */
-  /* { 0, XF86XK_AudioPrev,     spawn,    SHCMD("mpc prev") }, */
-  /* { 0, XF86XK_AudioNext,     spawn,    SHCMD("mpc next") }, */
-  /* { 0, XF86XK_AudioPause,    spawn,    SHCMD("mpc pause") }, */
-  /* { 0, XF86XK_AudioPlay,     spawn,    SHCMD("mpc play") }, */
-  /* { 0, XF86XK_AudioStop,     spawn,    SHCMD("mpc stop") }, */
-  /* { 0, XF86XK_AudioRewind,   spawn,    SHCMD("mpc seek -10") }, */
-  /* { 0, XF86XK_AudioForward,  spawn,    SHCMD("mpc seek +10") }, */
-  /* { 0, XF86XK_AudioMedia,    spawn,    SHCMD(TERMINAL " -e ncmpcpp") }, */
-  /* { 0, XF86XK_PowerOff,      spawn,    SHCMD("sysact") }, */
-  /* { 0, XF86XK_Calculator,    spawn,    SHCMD(TERMINAL " -e bc -l") }, */
-  /* { 0, XF86XK_Sleep,         spawn,    SHCMD("sudo -A zzz") }, */
-  /* { 0, XF86XK_ScreenSaver,   spawn,    SHCMD("slock & xset dpms force off; mpc pause; pauseallmpv") }, */
-  /* { 0, XF86XK_Mail,          spawn,    SHCMD(TERMINAL " -e neomutt ; pkill -RTMIN+12 dwmblocks") }, */
-  /* { 0, XF86XK_MyComputer,    spawn,    SHCMD(TERMINAL " -e ranger /") }, */
-  /* { 0, XF86XK_Battery,       spawn,    SHCMD("") }, */
-  /* { 0, XF86XK_TouchpadOff,   spawn,    SHCMD("synclient TouchpadOff=1") }, */
-  /* { 0, XF86XK_TouchpadOn,    spawn,    SHCMD("synclient TouchpadOff=0") }, */
-  /* { 0, XF86XK_TouchpadToggle,spawn,    SHCMD("(synclient | grep 'TouchpadOff.*1' && synclient TouchpadOff=0) || synclient TouchpadOff=1") }, */
-  /* { MODKEY|Mod4Mask,              XK_h,      incrgaps,       {.i = +1 } }, */
-  /* { MODKEY|Mod4Mask,              XK_l,      incrgaps,       {.i = -1 } }, */
-  /* { MODKEY|Mod4Mask|ShiftMask,    XK_h,      incrogaps,      {.i = +1 } }, */
-  /* { MODKEY|Mod4Mask|ShiftMask,    XK_l,      incrogaps,      {.i = -1 } }, */
-  /* { MODKEY|Mod4Mask|ControlMask,  XK_h,      incrigaps,      {.i = +1 } }, */
-  /* { MODKEY|Mod4Mask|ControlMask,  XK_l,      incrigaps,      {.i = -1 } }, */
-  /* { MODKEY|Mod4Mask|ShiftMask,    XK_0,      defaultgaps,    {0} }, */
-  /* { MODKEY,                       XK_y,      incrihgaps,     {.i = +1 } }, */
-  /* { MODKEY,                       XK_o,      incrihgaps,     {.i = -1 } }, */
-  /* { MODKEY|ControlMask,           XK_y,      incrivgaps,     {.i = +1 } }, */
-  /* { MODKEY|ControlMask,           XK_o,      incrivgaps,     {.i = -1 } }, */
-  /* { MODKEY|Mod4Mask,              XK_y,      incrohgaps,     {.i = +1 } }, */
-  /* { MODKEY|Mod4Mask,              XK_o,      incrohgaps,     {.i = -1 } }, */
-  /* { MODKEY|ShiftMask,             XK_y,      incrovgaps,     {.i = +1 } }, */
-  /* { MODKEY|ShiftMask,             XK_o,      incrovgaps,     {.i = -1 } }, */
 };
 
 /* button definitions */
@@ -321,10 +273,7 @@ static Button buttons[] = {
   { ClkStatusText,  ShiftMask,  Button1,  sigdwmblocks, {.i = 6} },
 #endif
   { ClkClientWin,   MODKEY,     Button1,  movemouse,    {0} },
-  { ClkClientWin,   MODKEY,     Button2,  defaultgaps,  {0} },
   { ClkClientWin,   MODKEY,     Button3,  resizemouse,  {0} },
-  { ClkClientWin,   MODKEY,     Button4,  incrgaps,     {.i = +1} },
-  { ClkClientWin,   MODKEY,     Button5,  incrgaps,     {.i = -1} },
   { ClkTagBar,      0,          Button1,  view,         {0} },
   { ClkTagBar,      0,          Button3,  toggleview,   {0} },
   { ClkTagBar,      MODKEY,     Button1,  tag,          {0} },
