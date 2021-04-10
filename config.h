@@ -202,19 +202,18 @@ static Key keys[] = {
   { MODKEY|ShiftMask,   XK_t,  setlayout,  {.v = &layout_tatami } },
   { MODKEY,             XK_y,  setlayout,  {.v = &layout_dwindle } },
   { MODKEY|ShiftMask,   XK_y,  setlayout,  {.v = &layout_spiral } },
-  { MODKEY,             XK_u,  setlayout,  {.v = &layout_monocle } },
-  { MODKEY|ShiftMask,   XK_u,  setlayout,  {.v = &layout_deck } },
+  { MODKEY,             XK_u,  setlayout,  {.v = &layout_deck } },
+  { MODKEY|ShiftMask,   XK_u,  setlayout,  {.v = &layout_bstackhoriz } },
   { MODKEY,             XK_i,  setlayout,  {.v = &layout_centeredmaster } },
   { MODKEY|ShiftMask,   XK_i,  setlayout,  {.v = &layout_centeredfloatingmaster } },
   { MODKEY,             XK_g,  setlayout,  {.v = &layout_grid } },
   { MODKEY|ShiftMask,   XK_g,  setlayout,  {.v = &layout_horizgrid } },
   { MODKEY,             XK_s,  setlayout,  {.v = &layout_bstack } },
-  { MODKEY|ShiftMask,   XK_s,  setlayout,  {.v = &layout_bstackhoriz } },
+  { MODKEY,             XK_f,  setlayout,  {.v = &layout_monocle } },
   { MODKEY|ShiftMask,   XK_f,  setlayout,  {.v = &layout_floating } },
 
   /* change the layout of a single window */
-  { MODKEY,             XK_f,     togglefullscr,  {0} },
-  { MODKEY|ControlMask, XK_s,     togglesticky,   {0} },
+  { MODKEY|ShiftMask,   XK_s,     togglesticky,   {0} },
   { MODKEY|ShiftMask,   XK_space, togglefloating, {0} },
 
   /* toggle whether focused client is in master area */

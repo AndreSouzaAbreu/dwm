@@ -9,36 +9,8 @@ static void fibonacci(Monitor *m, int s);
 static void spiral(Monitor *m);
 static void tile(Monitor *m);
 static void tatami(Monitor *m);
-
-void
-getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf, int *mr, int *sr)
-{
-	unsigned int n;
-	float mfacts, sfacts;
-	int mtotal = 0, stotal = 0;
-	Client *c;
-
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	mfacts = MIN(n, m->nmaster);
-	sfacts = n - m->nmaster;
-
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-		if (n < m->nmaster)
-			mtotal += msize / mfacts;
-		else
-			stotal += ssize / sfacts;
-
-	*mf = mfacts; // total factor of master area
-	*sf = sfacts; // total factor of stack area
-	*mr = msize - mtotal; // the remainder (rest) of pixels after an even master split
-	*sr = ssize - stotal; // the remainder (rest) of pixels after an even stack split
-}
-
-
-/*
- * Centred master layout + gaps
- * https://dwm.suckless.org/patches/centeredmaster/
- */
+static void horizgrid(Monitor *m);
+static void grid(Monitor *m);
 
 void
 bstack(Monitor *m)
@@ -266,7 +238,8 @@ centeredfloatingmaster(Monitor *m)
 }
 
 static void
-deck(Monitor *m) {
+deck(Monitor *m)
+{
 	unsigned int i, n, h, mw, my;
 	float mfacts = 0;
 	Client *c;
@@ -297,7 +270,8 @@ deck(Monitor *m) {
 }
 
 void
-fibonacci(Monitor *mon, int s) {
+fibonacci(Monitor *mon, int s)
+{
 	unsigned int i, n, nx, ny, nw, nh;
 	Client *c;
 
@@ -354,12 +328,14 @@ fibonacci(Monitor *mon, int s) {
 }
 
 void
-dwindle(Monitor *mon) {
+dwindle(Monitor *mon)
+{
 	fibonacci(mon, 1);
 }
 
 void
-spiral(Monitor *mon) {
+spiral(Monitor *mon)
+{
 	fibonacci(mon, 0);
 }
 
@@ -463,7 +439,8 @@ horizgrid(Monitor *m)
 }
 
 void 
-tatami(Monitor *m) {
+tatami(Monitor *m)
+{
 	unsigned int i, n, nx, ny, nw, nh,
 				 mats, tc,
 				 tnx, tny, tnw, tnh;
