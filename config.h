@@ -72,7 +72,6 @@ static const Layout layouts[] = {
   { "|M|",  centeredmaster },         /* Master in middle, slaves on sides */
   { ">M>",  centeredfloatingmaster }, /* Same but master floats */
   { "><>",  NULL },                   /* no layout function means floating behavior */
-  { NULL,   NULL },
   { "HHH",  grid },                   /* vertical grid of same size clients */
   { "###",  horizgrid },              /* horizontal grid of same size clients */
   { "|+|",  tatami },
@@ -124,10 +123,6 @@ ResourcePref resources[] = {
 #include "shiftview.c"
 
 static Key keys[] = {
-  /* { MODKEY|ShiftMask,    XK_Escape,  spawn,          SHCMD("") }, */
-  /* { MODKEY,              XK_grave,   spawn,          SHCMD("dmenuunicode") }, */
-  /* { MODKEY|ShiftMask,    XK_grave,   togglescratch,  SHCMD("") }, */
-
   TAGKEYS(XK_1, 0)
   TAGKEYS(XK_2, 1)
   TAGKEYS(XK_3, 2)
@@ -144,20 +139,25 @@ static Key keys[] = {
   { MODKEY,           XK_Tab, view,       {0} },
   { MODKEY,           XK_q,   killclient, {0} },
 
-  /* volume */
-  { MODKEY|ShiftMask,   XK_minus,  spawn,  SHCMD("pamixer --allow-boost -d 5; pkill --signal 10 dwmblocks") },
-  { MODKEY|ShiftMask,   XK_equal,  spawn,  SHCMD("pamixer --allow-boost -i 5; pkill --signal 10 dwmblocks") },
-  { 0,          XF86XK_AudioMute,  spawn,  SHCMD("pamixer -t; pkill --signal 10 dwmblocks") },
-  { 0,   XF86XK_AudioRaiseVolume,  spawn,  SHCMD("pamixer --allow-boost -i 5; pkill --signal 10 dwmblocks") },
-  { 0,   XF86XK_AudioLowerVolume,  spawn,  SHCMD("pamixer --allow-boost -d 5; pkill --signal 10 dwmblocks") },
+  /* keybindings for keyboards with volume keys */
+  { 0,          XF86XK_AudioMute,  spawn,  SHCMD("volumectl toogle-mute") },
+  { 0,   XF86XK_AudioRaiseVolume,  spawn,  SHCMD("volumectl inc 5") },
+  { 0,   XF86XK_AudioLowerVolume,  spawn,  SHCMD("volumectl dec 5") },
 
-  /* screen brightness */
+  /* keybindings for keyboards without volume keys */
+  { MODKEY,             XK_m,      spawn,  SHCMD("volumectl toggle-mute") },
+  { MODKEY|ShiftMask,   XK_minus,  spawn,  SHCMD("volumectl dec 5") },
+  { MODKEY|ShiftMask,   XK_equal,  spawn,  SHCMD("volumectl inc 5") },
+
+  /* keybindings for keyboards with screen brightness keys */
   { 0,      XF86XK_MonBrightnessUp,   spawn, SHCMD("light -A 5") },
   { 0,      XF86XK_MonBrightnessDown, spawn, SHCMD("light -U 5") },
+
+  /* keybindings for keyboards without screen brightness keys */
   { MODKEY, XK_minus,                 spawn, SHCMD("light -U 5") },
   { MODKEY, XK_equal,                 spawn, SHCMD("light -A 5") },
 
-  /* tagall */
+  /* tagall keybindings  */
   { MODKEY|ShiftMask,     XK_F1,      tagall,        {.v = "1"} }, \
   { MODKEY|ShiftMask,     XK_F2,      tagall,        {.v = "2"} }, \
   { MODKEY|ShiftMask,     XK_F3,      tagall,        {.v = "3"} }, \
@@ -171,36 +171,35 @@ static Key keys[] = {
   /* toggle attach below */
   { MODKEY|ShiftMask,     XK_Tab,     toggleAttachBelow, {0} },
 
-  /* cfacts*/
+  /* keybingins for resizing windows in stack area */
   { MODKEY,     XK_z,      setcfact,       {.f = +0.25} },
   { MODKEY,     XK_x,      setcfact,       {.f = -0.25} },
   { MODKEY,     XK_a,      setcfact,       {.f =  0.00} },
 
   /* commands */
-  /* { MODKEY,            XK_v,  spawn,  SHCMD(TERMINAL " -e vim") }, */
-  { MODKEY,            XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
-  { MODKEY,            XK_w,  spawn,  SHCMD(BROWSER) },
-  { MODKEY,            XK_d,  spawn,  SHCMD("menu-applications") },
-  { MODKEY,            XK_c,  spawn,  SHCMD("menu-clipboard") },
-  { MODKEY|ControlMask,XK_l,  spawn,  SHCMD("menu-lorem") },
-  { MODKEY|ShiftMask,  XK_l,  spawn,  SHCMD("screen-lock") },
-  { MODKEY,            XK_p,  spawn,  SHCMD("menu-password") },
-  { MODKEY|ShiftMask,  XK_p,  spawn,  SHCMD("menu-otp") },
-  { MODKEY,            XK_m,  spawn,  SHCMD("pamixer --toggle-mute; pkill --signal 10 dwmblocks") },
+  { MODKEY,             XK_v,  spawn,  SHCMD(TERMINAL " -e vim") },
+  { MODKEY,             XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
+  { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
+  { MODKEY,             XK_d,  spawn,  SHCMD("menu-applications") },
+  { MODKEY,             XK_c,  spawn,  SHCMD("menu-clipboard") },
+  { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
+  { MODKEY|ShiftMask,   XK_l,  spawn,  SHCMD("screen-lock") },
+  { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
+  { MODKEY|ShiftMask,   XK_p,  spawn,  SHCMD("menu-otp") },
 
   /* screen temperature color */
   { MODKEY,           XK_F1,  spawn,  SHCMD("screen-color dec 500") },
   { MODKEY,           XK_F2,  spawn,  SHCMD("screen-color inc 500") },
 
   /* layouts */
-  { MODKEY,             XK_t,  setlayout,      {.v = &layouts[0]} }, /* tile */
-  { MODKEY|ShiftMask,   XK_t,  setlayout,      {.v = &layouts[1]} }, /* bstack */
-  { MODKEY,             XK_y,  setlayout,      {.v = &layouts[2]} }, /* spiral */
-  { MODKEY|ShiftMask,   XK_y,  setlayout,      {.v = &layouts[3]} }, /* dwindle */
-  { MODKEY,             XK_u,  setlayout,      {.v = &layouts[4]} }, /* deck */
-  { MODKEY|ShiftMask,   XK_u,  setlayout,      {.v = &layouts[5]} }, /* monocle */
-  { MODKEY,             XK_i,  setlayout,      {.v = &layouts[6]} }, /* centeredmaster */
-  { MODKEY|ShiftMask,   XK_i,  setlayout,      {.v = &layouts[7]} }, /* centeredfloatingmaster */
+  { MODKEY,             XK_t,  setlayout,      {.v = &layouts[0]} },
+  { MODKEY|ShiftMask,   XK_t,  setlayout,      {.v = &layouts[1]} },
+  { MODKEY,             XK_y,  setlayout,      {.v = &layouts[2]} },
+  { MODKEY|ShiftMask,   XK_y,  setlayout,      {.v = &layouts[3]} },
+  { MODKEY,             XK_u,  setlayout,      {.v = &layouts[4]} },
+  { MODKEY|ShiftMask,   XK_u,  setlayout,      {.v = &layouts[5]} },
+  { MODKEY,             XK_i,  setlayout,      {.v = &layouts[6]} },
+  { MODKEY|ShiftMask,   XK_i,  setlayout,      {.v = &layouts[7]} },
   { MODKEY,             XK_g,  setlayout,      {.v = &layouts[10]} },
   { MODKEY|ShiftMask,   XK_g,  setlayout,      {.v = &layouts[11]} },
   { MODKEY|ControlMask, XK_g,  setlayout,      {.v = &layouts[12]} },
@@ -225,6 +224,7 @@ static Key keys[] = {
   { MODKEY,           XK_Return,      spawn,          {.v = termcmd } },
   { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} },
 
+  /* keybindings for resizing floating windows */
   { MODKEY|ControlMask, XK_k,           togglehorizontalmax, {0} },
   { MODKEY|ControlMask, XK_j,           toggleverticalmax,   {0} },
   { MODKEY|ControlMask, XK_m,           togglemaximize,      {0} },
@@ -247,16 +247,15 @@ static Key keys[] = {
   { MODKEY,           XK_space, zoom,           {0} },
   { MODKEY|ShiftMask, XK_space, togglefloating, {0} },
 
-  /* print */
+  /* keybindings for taking screenshots */
   { 0,         XK_Print, spawn, SHCMD("flameshot gui") },
-  { ShiftMask, XK_Print, spawn, SHCMD("flameshot full -p ~/pictures/screenshots") },
+  { ShiftMask, XK_Print, spawn, SHCMD("flameshot full --path ~/pictures/screenshots") },
 
   /* other stuff */
   { MODKEY,    XK_F11,   spawn, SHCMD("record-webcam") },
 
   { 0,  XF86XK_WWW,          spawn, SHCMD(BROWSER) },
   { 0,  XF86XK_DOS,          spawn, SHCMD(TERMINAL) },
-  { 0,  XF86XK_Launch1,      spawn, SHCMD("xset dpms force off") },
   { 0,  XF86XK_AudioMicMute, spawn, SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle") },
 };
 
