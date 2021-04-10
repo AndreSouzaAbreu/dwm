@@ -1,4 +1,4 @@
-/* See LICENSE file for copyright and license details.
+/* 
  *
  * dynamic window manager is designed like any other X client as well. It is
  * driven through handling X events. In contrast to other X clients, a window
@@ -101,10 +101,12 @@ struct Client {
     float mina, maxa;
     int x, y, w, h;
     int oldx, oldy, oldw, oldh;
+    int sfx, sfy, sfw, sfh; /* stored float geometry, used on mode revert */
     int basew, baseh, incw, inch, maxw, maxh, minw, minh;
     int bw, oldbw;
     unsigned int tags;
-    int ismax, wasfloating, isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, issticky;
+    int ismax, wasfloating;
+    int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, issticky;
     pid_t pid;
     Client *next;
     Client *snext;
@@ -274,6 +276,7 @@ static void updatestatus(void);
 static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
+static void updatefloatingsizehints(Client *c);
 static void view(const Arg *arg);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -1265,6 +1268,7 @@ manage(Window w, XWindowAttributes *wa)
     updatewindowtype(c);
     updatesizehints(c);
     updatewmhints(c);
+    updatefloatingsizehints(c);
     XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
     grabbuttons(c, 0);
     c->wasfloating = 0;
@@ -2027,8 +2031,11 @@ togglefloating(const Arg *arg)
         selmon->sel->oldbw = selmon->sel->bw;
         selmon->sel->bw = borderpx;
       }
-      resize(selmon->sel, selmon->sel->x, selmon->sel->y,
-             selmon->sel->w - selmon->sel->bw * 2, selmon->sel->h - selmon->sel->bw * 2, 0);
+      resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
+             selmon->sel->sfw - selmon->sel->bw * 2, selmon->sel->sfh - selmon->sel->bw * 2, 0);
+    } else {
+      /* save last known float dimensions */
+      updatefloatingsizehints(selmon->sel);
     }
     arrange(selmon);
 }
@@ -2431,6 +2438,15 @@ updatewmhints(Client *c)
             c->neverfocus = 0;
         XFree(wmh);
     }
+}
+
+void
+updatefloatingsizehints(Client *c)
+{
+    c->sfx = c->x;
+    c->sfy = c->y;
+    c->sfw = c->w;
+    c->sfh = c->h;
 }
 
 void
