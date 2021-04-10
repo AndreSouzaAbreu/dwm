@@ -48,8 +48,7 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float default_mfact = 0.80;
-static float mfact = default_mfact;  /* factor of master area size [0.05..0.95] */
+static float mfact = 0.80;  /* factor of master area size [0.05..0.95] */
 static int nmaster = 1;     /* number of clients in master area */
 static int resizehints = 1; /* 1 means respect size hints in tiled resizals */
 static int attachbelow = 1; /* 1 means attach at the end */
@@ -238,7 +237,6 @@ static Key keys[] = {
   /* resize master area */
   { MODKEY,           XK_h,           setmfact,       {.f = -0.05 } },
   { MODKEY,           XK_l,           setmfact,       {.f = +0.05 } },
-  { MODKEY,           XK_n,           setmfact,       {.f = default_mfact } },
 
   /* navigate through tags */
   { MODKEY,           XK_period,      shiftview,      {.i = +1 } },
@@ -258,6 +256,13 @@ static Key keys[] = {
   { MODKEY|ControlMask, XK_k,         togglehorizontalmax, {0} },
   { MODKEY|ControlMask, XK_j,         toggleverticalmax,   {0} },
   { MODKEY|ControlMask, XK_m,         togglemaximize,      {0} },
+
+  /* keybindings for moving floating windows */
+  { MODKEY|AltMask,    XK_Up,     movethrow,      {.ui = DIR_N  }},
+  { MODKEY|AltMask,    XK_Down,   movethrow,      {.ui = DIR_S  }},
+  { MODKEY|AltMask,    XK_Left,   movethrow,      {.ui = DIR_W  }},
+  { MODKEY|AltMask,    XK_Right,  movethrow,      {.ui = DIR_E  }},
+  { MODKEY|AltMask,    XK_m,      movethrow,      {.ui = DIR_C  }},
 
   /* bar */
   { MODKEY,           XK_b,           togglebar,      {0} },
