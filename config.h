@@ -48,7 +48,7 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static float mfact = 0.80;  /* factor of master area size [0.05..0.95] */
+static float mfact = 0.84;  /* factor of master area size [0.05..0.95] */
 static int nmaster = 1;     /* number of clients in master area */
 static int resizehints = 1; /* 1 means respect size hints in tiled resizals */
 static int attachbelow = 1; /* 1 means attach at the end */
@@ -139,11 +139,12 @@ static Key keys[] = {
   TAGKEYS(XK_9, 8)
 
   /* default bindings */
-  { MODKEY,           XK_0,   view,       {.ui = ~0 } },
-  { MODKEY|ShiftMask, XK_0,   tag,        {.ui = ~0 } },
-  { MODKEY,           XK_Tab, view,       {0} },
-  { MODKEY,           XK_q,   killclient, {0} },
-  { MODKEY|ShiftMask, XK_q,   quit,       {0} },
+  { MODKEY,             XK_0,   view,       {.ui = ~0 } },
+  { MODKEY|ShiftMask,   XK_0,   tag,        {.ui = ~0 } },
+  { MODKEY,             XK_Tab, view,       {0} },
+  { MODKEY,             XK_q,   killclient, {0} },
+  { MODKEY|ShiftMask,   XK_q,   killunsel,  {0} },
+  { MODKEY|ControlMask, XK_q,   quit,       {0} },
 
   /* keybindings for keyboards with volume keys */
   { 0,          XF86XK_AudioMute,  spawn,  SHCMD("volumectl toogle-mute") },
