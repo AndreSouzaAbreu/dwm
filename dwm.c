@@ -159,6 +159,8 @@ typedef struct {
     int isterminal;
     int noswallow;
     int monitor;
+    int floatingPositionsEnabled;
+    int floatX, floatY, floatW, floatH;
 } Rule;
 
 /* Xresources preferences */
@@ -371,7 +373,12 @@ applyrules(Client *c)
                 c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
                 c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
             }
-
+            if (c->isfloating && r->floatingPositionsEnabled) {
+              c->x = r->floatX;
+              c->y = r->floatY;
+              c->w = r->floatW;
+              c->h = r->floatH;
+            }
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
                 c->mon = m;
@@ -1981,9 +1988,10 @@ showhide(Client *c)
     if (!c)
         return;
     if (ISVISIBLE(c)) {
-        if ((c->tags & SPTAGMASK) && c->isfloating) {
-            c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
-            c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
+        /* applyrules(c); */
+        if (c->wasfloating) {
+          c->y = c->sfy;
+          c->x = c->sfx;
         }
         /* show clients top down */
         XMoveWindow(dpy, c->win, c->x, c->y);

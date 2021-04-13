@@ -2,6 +2,7 @@
 #define MODKEY Mod4Mask
 #define TERMINAL "termite"
 #define TERMCLASS "Termite"
+#define FLOATCLASS "floating"
 #define BROWSER "qutebrowser"
 
 /* appearance */
@@ -27,23 +28,28 @@ typedef struct {
   const char *name;
   const void *cmd;
 } Sp;
-const char *spcmd1[] = {TERMINAL, "--name", "spterm",  NULL };
-const char *spcmd2[] = {TERMINAL, "--name", "spfm", "-e", "ranger", NULL };
+
+const char spcmd1n[] = "sp-terminal";
+const char spcmd2n[] = "sp-webcam-recorder";
+const char *spcmd1[] = { "st", "-n", spcmd1n };
+const char *spcmd2[] = { "st", "-n", spcmd2n };
 static Sp scratchpads[] = {
-  /* name    cmd  */
-  {"spterm", spcmd1},
-  {"spfm", spcmd2},
+  /* name    command */
+  { spcmd1n, spcmd1 },
+  { spcmd2n, spcmd2 },
 };
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 static const Rule rules[] = {
-  /* class      instance    title           tags mask  isfloating   isterminal  noswallow  monitor */
-  { TERMCLASS,  NULL,       NULL,           0,          0,           1,         0,         -1 },
-  { NULL,       NULL,       "Event Tester", 0,          0,           0,         1,         -1 },
-  { NULL,      "spterm",    NULL,           SPTAG(0),   1,           1,         0,         -1 },
-  { NULL,      "spfm",      NULL,           SPTAG(1),   1,           1,         0,         -1 },
+  /* class         instance title  tags mask  isfloating isterminal noswallow  monitor usecoords  cords x,y,w,h */
+  { TERMCLASS,     NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
+  { FLOATCLASS,    NULL,    NULL,  0,         1,         1,         0,         -1,     0,         0,0,0,0},
+  { NULL,          spcmd1n, NULL,  SPTAG(0),  1,         1,         0,         -1,     0,         0,0,0,0},
+  { NULL,          spcmd2n, NULL,  SPTAG(1),  1,         1,         0,         -1,     1,         880,720,520,200},
+  { "bb",          NULL,    NULL,  0,         1,         1,         0,         -1,     1,         880,720,520,300},
+  { "bottomright", NULL,    NULL,  0,         1,         1,         0,         -1,     1,         600,730,800,300},
 };
 
 /* layout(s) */
@@ -188,6 +194,7 @@ static Key keys[] = {
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
   { MODKEY,             XK_d,  spawn,  SHCMD("menu-applications") },
   { MODKEY,             XK_c,  spawn,  SHCMD("menu-clipboard") },
+  { MODKEY|ControlMask, XK_c,  spawn,  SHCMD("applet-cryptomarket --compact") },
   { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
   { MODKEY|ShiftMask,   XK_l,  spawn,  SHCMD("screen-lock") },
   { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
