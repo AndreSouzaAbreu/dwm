@@ -1,16 +1,19 @@
 /* Constants */
 #define MODKEY Mod4Mask
 #define TERMINAL "termite"
-#define TERMCLASS "Termite"
 #define FLOATCLASS "floating"
 #define BROWSER "qutebrowser"
 
 /* appearance */
-static unsigned int borderpx  = 3;  /* border pixel of windows */
-static unsigned int snap      = 32; /* snap pixel */
-static int swallowfloating    = 0;  /* 1 means swallow floating windows by default */
-static int showbar            = 1;  /* 0 means no bar */
-static int topbar             = 1;  /* 0 means bottom bar */
+static unsigned int borderpx  = 3;    /* border pixel of windows */
+static unsigned int snap      = 32;   /* snap pixel */
+static int swallowfloating    = 0;    /* 1 means swallow floating windows by default */
+static int showbar            = 1;    /* 0 means no bar */
+static int topbar             = 1;    /* 0 means bottom bar */
+static int attachbelow        = 1;    /* 1 means attach at the end */
+static int resizehints        = 1;    /* 1 means respect size hints in tiled resizals */
+static int nmaster            = 1;    /* default number of clients in master area */
+static float mfact            = 0.84; /* factor of master area size [0.05..0.95] */
 static char *fonts[]          = { "monospace:size=14" };
 static char normbgcolor[]     = "#222222";
 static char normbordercolor[] = "#444444";
@@ -29,35 +32,35 @@ typedef struct {
   const void *cmd;
 } Sp;
 
-const char spcmd1n[] = "sp-terminal";
-const char spcmd2n[] = "sp-webcam-recorder";
+const char spcmd1n[] = "sp-terminal-small";
+const char spcmd2n[] = "sp-termimal";
+const char spcmd3n[] = "sp-crypto";
 const char *spcmd1[] = { "st", "-n", spcmd1n };
 const char *spcmd2[] = { "st", "-n", spcmd2n };
+const char *spcmd3[] = { "st", "-n", spcmd3n, "-e", "coins", "--compact" };
 static Sp scratchpads[] = {
   /* name    command */
   { spcmd1n, spcmd1 },
   { spcmd2n, spcmd2 },
+  { spcmd3n, spcmd3 },
 };
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
+/* rules */
 static const Rule rules[] = {
-  /* class         instance title  tags mask  isfloating isterminal noswallow  monitor usecoords  cords x,y,w,h */
-  { TERMCLASS,     NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
-  { FLOATCLASS,    NULL,    NULL,  0,         1,         1,         0,         -1,     0,         0,0,0,0},
-  { NULL,          spcmd1n, NULL,  SPTAG(0),  1,         1,         0,         -1,     0,         0,0,0,0},
-  { NULL,          spcmd2n, NULL,  SPTAG(1),  1,         1,         0,         -1,     1,         880,720,520,200},
-  { "bb",          NULL,    NULL,  0,         1,         1,         0,         -1,     1,         880,720,520,300},
-  { "bottomright", NULL,    NULL,  0,         1,         1,         0,         -1,     1,         600,730,800,300},
+  /* class       instance title  tags mask  isfloating isterminal noswallow  monitor usecoords  cords x,y,w,h */
+  { "Termite",   NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
+  { "St"     ,   NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
+  { FLOATCLASS,  NULL,    NULL,  0,         1,         1,         0,         -1,     0,         0,0,0,0},
+  { NULL,        spcmd1n, NULL,  SPTAG(0),  1,         1,         0,         -1,     0,         0,0,0,0},
+  { NULL,        spcmd2n, NULL,  SPTAG(1),  1,         1,         0,         -1,     1,         0.5,89,99,10},
+  { NULL,        spcmd3n, NULL,  SPTAG(2),  1,         1,         0,         -1,     1,         35,60,65,40},
 };
 
 /* layout(s) */
-static float mfact = 0.84;  /* factor of master area size [0.05..0.95] */
-static int nmaster = 1;     /* number of clients in master area */
-static int resizehints = 1; /* 1 means respect size hints in tiled resizals */
-static int attachbelow = 1; /* 1 means attach at the end */
-#define FORCE_VSPLIT 1      /* nrowgrid layout: force two clients to always split vertically */
+#define FORCE_VSPLIT 1 /* nrowgrid layout: force two clients to always split vertically */
 
 #include "layouts.c"
 #include "tagall.c"
@@ -67,7 +70,7 @@ static const Layout
   layout_bstack = { "TTT", bstack },
   layout_tile = { "[]=", tile },
   layout_spiral = { "[@]", spiral },
-  layout_dwindle = { "[\\]",dwindle },
+  layout_dwindle = { "[\\]", dwindle },
   layout_deck = { "[D]", deck },
   layout_monocle = { "[M]", monocle },
   layout_centeredmaster = { "|M|", centeredmaster },
@@ -107,9 +110,6 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-
-/* commands */
-static const char *termcmd[]  = { TERMINAL, NULL };
 
 /* Xresources preferences to load at startup */
 ResourcePref resources[] = {
@@ -189,12 +189,12 @@ static Key keys[] = {
   { MODKEY|AltMask,     XK_n,      setcfact,       {.f =  0.00} },
 
   /* commands */
+  { MODKEY,        XK_Return,  spawn,  SHCMD(TERMINAL) },
   { MODKEY,             XK_v,  spawn,  SHCMD(TERMINAL " -e vim") },
   { MODKEY,             XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
   { MODKEY,             XK_d,  spawn,  SHCMD("menu-applications") },
   { MODKEY,             XK_c,  spawn,  SHCMD("menu-clipboard") },
-  { MODKEY|ControlMask, XK_c,  spawn,  SHCMD("applet-cryptomarket --compact") },
   { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
   { MODKEY|ShiftMask,   XK_l,  spawn,  SHCMD("screen-lock") },
   { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
@@ -254,9 +254,10 @@ static Key keys[] = {
   { MODKEY|ShiftMask, XK_period,      shifttag,       { .i = +1 } },
   { MODKEY|ShiftMask, XK_comma,       shifttag,       { .i = -1 } },
 
-  { MODKEY,           XK_Return,      spawn,          {.v = termcmd } },
-  { MODKEY,           XK_apostrophe,  togglescratch,  {.ui = 0} },
-  { MODKEY|ShiftMask, XK_apostrophe,  togglescratch,  {.ui = 1} },
+  /* scratchpads */
+  { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} },
+  { MODKEY,           XK_apostrophe,  togglescratch,  {.ui = 1} },
+  { MODKEY|ShiftMask, XK_apostrophe,  togglescratch,  {.ui = 2} },
 
   /* keybindings for resizing floating windows */
   { MODKEY|ControlMask, XK_k,         togglehorizontalmax, {0} },
@@ -264,11 +265,11 @@ static Key keys[] = {
   { MODKEY|ControlMask, XK_m,         togglemaximize,      {0} },
 
   /* keybindings for moving floating windows */
-  { MODKEY|AltMask,    XK_Up,     movethrow,      {.ui = DIR_N  }},
-  { MODKEY|AltMask,    XK_Down,   movethrow,      {.ui = DIR_S  }},
-  { MODKEY|AltMask,    XK_Left,   movethrow,      {.ui = DIR_W  }},
-  { MODKEY|AltMask,    XK_Right,  movethrow,      {.ui = DIR_E  }},
-  { MODKEY|AltMask,    XK_m,      movethrow,      {.ui = DIR_C  }},
+  { MODKEY|AltMask, XK_Up,    movethrow, {.ui = DIR_N  }},
+  { MODKEY|AltMask, XK_Down,  movethrow, {.ui = DIR_S  }},
+  { MODKEY|AltMask, XK_Left,  movethrow, {.ui = DIR_W  }},
+  { MODKEY|AltMask, XK_Right, movethrow, {.ui = DIR_E  }},
+  { MODKEY|AltMask, XK_m,     movethrow, {.ui = DIR_C  }},
 
   /* bar */
   { MODKEY,           XK_b,           togglebar,      {0} },

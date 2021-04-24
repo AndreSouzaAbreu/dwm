@@ -26,6 +26,11 @@ maximize(int x, int y, int w, int h) {
 		selmon->sel->ismax = False;
 	}
 	drawbar(selmon);
+  selmon->sel->sfy = selmon->sel->y;
+  selmon->sel->sfx = selmon->sel->x;
+  selmon->sel->sfw = selmon->sel->w;
+  selmon->sel->sfh = selmon->sel->h;
+  selmon->sel->wasfloating = 1;
 	while(XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
 

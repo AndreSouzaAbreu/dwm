@@ -160,7 +160,7 @@ typedef struct {
     int noswallow;
     int monitor;
     int floatingPositionsEnabled;
-    int floatX, floatY, floatW, floatH;
+    float floatX, floatY, floatW, floatH;
 } Rule;
 
 /* Xresources preferences */
@@ -374,10 +374,18 @@ applyrules(Client *c)
                 c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
             }
             if (c->isfloating && r->floatingPositionsEnabled) {
-              c->x = r->floatX;
-              c->y = r->floatY;
-              c->w = r->floatW;
-              c->h = r->floatH;
+              if (r->floatX >= 0 && r->floatX < 100) {
+                c->x = (r->floatX * c->mon->mw)/100;
+              }
+              if (r->floatY >= 0 && r->floatY < 100) {
+                c->y = (r->floatY * c->mon->mh)/100;
+              }
+              if (r->floatW > 0 && r->floatW <= 100) {
+                c->w = (r->floatW * c->mon->mw)/100;
+              }
+              if (r->floatH > 0 && r->floatH <= 100) {
+                c->h = (r->floatH * c->mon->mh)/100;
+              }
             }
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
@@ -1468,6 +1476,11 @@ movethrow(const Arg *arg)
             return;
     }
 	resize(c, nx, ny, nw, nh, True);
+  c->sfy = c->y;
+  c->sfx = c->x;
+  c->sfw = c->w;
+  c->sfh = c->h;
+  c->wasfloating = 1;
    XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, nw/2, nh/2);
 }
 
