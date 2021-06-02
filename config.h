@@ -32,12 +32,12 @@ typedef struct {
   const void *cmd;
 } Sp;
 
-const char spcmd1n[] = "sp-terminal-small";
-const char spcmd2n[] = "sp-termimal";
-const char spcmd3n[] = "sp-crypto";
-const char *spcmd1[] = { "st", "-n", spcmd1n };
-const char *spcmd2[] = { "st", "-n", spcmd2n };
-const char *spcmd3[] = { "st", "-n", spcmd3n, "-e", "coins", "--compact" };
+const char spcmd1n[] = "sp_terminal_small";
+const char spcmd2n[] = "sp_termimal";
+const char spcmd3n[] = "sp_coinmarket";
+const char *spcmd1[] = { TERMINAL, "--name", spcmd1n };
+const char *spcmd2[] = { TERMINAL, "--name", spcmd2n };
+const char *spcmd3[] = { TERMINAL, "--name", spcmd3n, "-e", "coins -c"};
 static Sp scratchpads[] = {
   /* name    command */
   { spcmd1n, spcmd1 },
@@ -53,9 +53,10 @@ static const Rule rules[] = {
   /* class       instance title  tags mask  isfloating isterminal noswallow  monitor usecoords  cords x,y,w,h */
   { "Termite",   NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
   { "St"     ,   NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
+  { "Alacritty", NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
   { FLOATCLASS,  NULL,    NULL,  0,         1,         1,         0,         -1,     0,         0,0,0,0},
   { NULL,        spcmd1n, NULL,  SPTAG(0),  1,         1,         0,         -1,     0,         0,0,0,0},
-  { NULL,        spcmd2n, NULL,  SPTAG(1),  1,         1,         0,         -1,     1,         0.5,89,99,10},
+  { NULL,        spcmd2n, NULL,  SPTAG(1),  1,         1,         0,         -1,     1,         0.5,84,99,15},
   { NULL,        spcmd3n, NULL,  SPTAG(2),  1,         1,         0,         -1,     1,         35,60,65,40},
 };
 
@@ -162,23 +163,23 @@ static Key keys[] = {
   { MODKEY|ShiftMask,   XK_equal,  spawn,  SHCMD("volumectl inc 5") },
 
   /* keybindings for keyboards with screen brightness keys */
-  { 0,      XF86XK_MonBrightnessUp,   spawn, SHCMD("light -A 5") },
-  { 0,      XF86XK_MonBrightnessDown, spawn, SHCMD("light -U 5") },
+  { 0, XF86XK_MonBrightnessUp,     spawn,  SHCMD("light -A 5") },
+  { 0, XF86XK_MonBrightnessDown,   spawn,  SHCMD("light -U 5") },
 
   /* keybindings for keyboards without screen brightness keys */
   { MODKEY, XK_minus,                 spawn, SHCMD("light -U 5") },
   { MODKEY, XK_equal,                 spawn, SHCMD("light -A 5") },
 
   /* tagall keybindings  */
-  { MODKEY|ShiftMask,     XK_F1,      tagall,        {.v = "1"} },
-  { MODKEY|ShiftMask,     XK_F2,      tagall,        {.v = "2"} },
-  { MODKEY|ShiftMask,     XK_F3,      tagall,        {.v = "3"} },
-  { MODKEY|ShiftMask,     XK_F4,      tagall,        {.v = "4"} },
-  { MODKEY|ShiftMask,     XK_F5,      tagall,        {.v = "5"} },
-  { MODKEY|ShiftMask,     XK_F6,      tagall,        {.v = "6"} },
-  { MODKEY|ShiftMask,     XK_F7,      tagall,        {.v = "7"} },
-  { MODKEY|ShiftMask,     XK_F8,      tagall,        {.v = "8"} },
-  { MODKEY|ShiftMask,     XK_F9,      tagall,        {.v = "9"} },
+  { MODKEY|ShiftMask,     XK_F1,      tagall,  {.v = "1"} },
+  { MODKEY|ShiftMask,     XK_F2,      tagall,  {.v = "2"} },
+  { MODKEY|ShiftMask,     XK_F3,      tagall,  {.v = "3"} },
+  { MODKEY|ShiftMask,     XK_F4,      tagall,  {.v = "4"} },
+  { MODKEY|ShiftMask,     XK_F5,      tagall,  {.v = "5"} },
+  { MODKEY|ShiftMask,     XK_F6,      tagall,  {.v = "6"} },
+  { MODKEY|ShiftMask,     XK_F7,      tagall,  {.v = "7"} },
+  { MODKEY|ShiftMask,     XK_F8,      tagall,  {.v = "8"} },
+  { MODKEY|ShiftMask,     XK_F9,      tagall,  {.v = "9"} },
 
   /* toggle attach below */
   { MODKEY|ShiftMask,     XK_Tab,     toggleAttachBelow, {0} },
@@ -193,12 +194,16 @@ static Key keys[] = {
   { MODKEY,             XK_v,  spawn,  SHCMD(TERMINAL " -e vim") },
   { MODKEY,             XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
-  { MODKEY,             XK_d,  spawn,  SHCMD("menu-applications") },
+
+  /* menus */
+  { MODKEY,             XK_a,  spawn,  SHCMD("menu-launcher") },
   { MODKEY,             XK_c,  spawn,  SHCMD("menu-clipboard") },
-  { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
-  { MODKEY|ShiftMask,   XK_l,  spawn,  SHCMD("screen-lock") },
   { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
+  { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
   { MODKEY|ShiftMask,   XK_p,  spawn,  SHCMD("menu-otp") },
+
+  /* lock screen */
+  { MODKEY|ShiftMask,   XK_l,  spawn,  SHCMD("screen-locker") },
 
   /* control screen temperature color */
   { MODKEY,           XK_F1,  spawn,  SHCMD("screen-color dec 500") },
@@ -227,8 +232,8 @@ static Key keys[] = {
   { MODKEY,             XK_space, zoom,           {0} },
 
   /* change the number of clients in master area */
-  { MODKEY|AltMask,    XK_minus,  incnmaster,     {.i = -1 } },
-  { MODKEY|AltMask,    XK_equal,  incnmaster,     {.i = +1 } },
+  { MODKEY|AltMask,     XK_minus,  incnmaster, {.i = -1 } },
+  { MODKEY|AltMask,     XK_equal,  incnmaster, {.i = +1 } },
 
   /* navigate through clients  */
   { MODKEY,  XK_j,     focusstack,  {.i = INC(+1) } },
@@ -265,11 +270,11 @@ static Key keys[] = {
   { MODKEY|ControlMask, XK_m,         togglemaximize,      {0} },
 
   /* keybindings for moving floating windows */
-  { MODKEY|AltMask, XK_Up,    movethrow, {.ui = DIR_N  }},
-  { MODKEY|AltMask, XK_Down,  movethrow, {.ui = DIR_S  }},
-  { MODKEY|AltMask, XK_Left,  movethrow, {.ui = DIR_W  }},
-  { MODKEY|AltMask, XK_Right, movethrow, {.ui = DIR_E  }},
-  { MODKEY|AltMask, XK_m,     movethrow, {.ui = DIR_C  }},
+  { MODKEY|AltMask,  XK_Up,    movethrow, {.ui = DIR_N  }},
+  { MODKEY|AltMask,  XK_Down,  movethrow, {.ui = DIR_S  }},
+  { MODKEY|AltMask,  XK_Left,  movethrow, {.ui = DIR_W  }},
+  { MODKEY|AltMask,  XK_Right, movethrow, {.ui = DIR_E  }},
+  { MODKEY|AltMask,  XK_m,     movethrow, {.ui = DIR_C  }},
 
   /* bar */
   { MODKEY,           XK_b,           togglebar,      {0} },
@@ -282,14 +287,12 @@ static Key keys[] = {
   /* { MODKEY|ShiftMask,   XK_Page_Up,   shifttag,   { .i = -1 } }, */
   /* { MODKEY|ShiftMask,   XK_Page_Down, shifttag,   { .i = +1 } }, */
 
-
   /* keybindings for taking screenshots */
-  { 0,         XK_Print, spawn, SHCMD("flameshot gui") },
-  { ShiftMask, XK_Print, spawn, SHCMD("flameshot full --path ~/pictures/screenshots") },
+  { 0,           XK_Print, spawn, SHCMD("screen-wizard -s") },
+  { ShiftMask,   XK_Print, spawn, SHCMD("screen-wizard") },
+  { MODKEY,      XK_F11,   spawn, SHCMD("record-webcam") },
 
   /* other stuff */
-  { MODKEY,    XK_F11,   spawn, SHCMD("record-webcam") },
-
   { 0,  XF86XK_WWW,          spawn, SHCMD(BROWSER) },
   { 0,  XF86XK_DOS,          spawn, SHCMD(TERMINAL) },
   { 0,  XF86XK_AudioMicMute, spawn, SHCMD("pactl set-source-mute @DEFAULT_SOURCE@ toggle") },
@@ -297,7 +300,6 @@ static Key keys[] = {
 
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
-
 static Button buttons[] = {
   /* click          event mask  button    function        argument */
 #ifndef __OpenBSD__
