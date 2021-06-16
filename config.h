@@ -185,9 +185,9 @@ static Key keys[] = {
   { MODKEY|ShiftMask,     XK_Tab,     toggleAttachBelow, {0} },
 
   /* keybingins for resizing windows in stack area */
-  { MODKEY|AltMask,     XK_l,      setcfact,       {.f = +0.25} },
-  { MODKEY|AltMask,     XK_h,      setcfact,       {.f = -0.25} },
-  { MODKEY|AltMask,     XK_n,      setcfact,       {.f =  0.00} },
+  { MODKEY|AltMask,     XK_i,      setcfact,       {.f = -0.25} },
+  { MODKEY|AltMask,     XK_o,      setcfact,       {.f = +0.25} },
+  { MODKEY|AltMask,     XK_p,      setcfact,       {.f =  0.00} },
 
   /* commands */
   { MODKEY,        XK_Return,  spawn,  SHCMD(TERMINAL) },
@@ -196,7 +196,7 @@ static Key keys[] = {
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
 
   /* menus */
-  { MODKEY,             XK_a,  spawn,  SHCMD("menu-launcher") },
+  { MODKEY,             XK_d,  spawn,  SHCMD("menu-launcher") },
   { MODKEY,             XK_c,  spawn,  SHCMD("menu-clipboard") },
   { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
   { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
@@ -250,14 +250,14 @@ static Key keys[] = {
   { MODKEY,           XK_l,           setmfact,       {.f = +0.05 } },
 
   /* navigate through tags */
-  { MODKEY,           XK_period,      shiftview,      {.i = +1 } },
   { MODKEY,           XK_comma,       shiftview,      {.i = -1 } },
+  { MODKEY,           XK_period,      shiftview,      {.i = +1 } },
   { MODKEY|ShiftMask, XK_Left,        shiftview,      {.i = -1 } },
   { MODKEY|ShiftMask, XK_Right,       shiftview,      {.i = +1 } },
 
   /* shift focused window to next/previous tag */
-  { MODKEY|ShiftMask, XK_period,      shifttag,       { .i = +1 } },
   { MODKEY|ShiftMask, XK_comma,       shifttag,       { .i = -1 } },
+  { MODKEY|ShiftMask, XK_period,      shifttag,       { .i = +1 } },
 
   /* scratchpads */
   { MODKEY|ShiftMask, XK_Return,      togglescratch,  {.ui = 0} },
@@ -265,16 +265,20 @@ static Key keys[] = {
   { MODKEY|ShiftMask, XK_apostrophe,  togglescratch,  {.ui = 2} },
 
   /* keybindings for resizing floating windows */
-  { MODKEY|ControlMask, XK_k,         togglehorizontalmax, {0} },
-  { MODKEY|ControlMask, XK_j,         toggleverticalmax,   {0} },
-  { MODKEY|ControlMask, XK_m,         togglemaximize,      {0} },
+  { MODKEY|ControlMask, XK_n,         togglehorizontalmax, {0} },
+  { MODKEY|ControlMask, XK_m,         toggleverticalmax,   {0} },
+  { MODKEY|ControlMask, XK_space,     togglemaximize,      {0} },
 
   /* keybindings for moving floating windows */
   { MODKEY|AltMask,  XK_Up,    movethrow, {.ui = DIR_N  }},
   { MODKEY|AltMask,  XK_Down,  movethrow, {.ui = DIR_S  }},
   { MODKEY|AltMask,  XK_Left,  movethrow, {.ui = DIR_W  }},
   { MODKEY|AltMask,  XK_Right, movethrow, {.ui = DIR_E  }},
-  { MODKEY|AltMask,  XK_m,     movethrow, {.ui = DIR_C  }},
+  { MODKEY|AltMask,  XK_k,     movethrow, {.ui = DIR_N  }},
+  { MODKEY|AltMask,  XK_j,     movethrow, {.ui = DIR_S  }},
+  { MODKEY|AltMask,  XK_h,     movethrow, {.ui = DIR_W  }},
+  { MODKEY|AltMask,  XK_l,     movethrow, {.ui = DIR_E  }},
+  { MODKEY|AltMask,  XK_space, movethrow, {.ui = DIR_C  }},
 
   /* bar */
   { MODKEY,           XK_b,           togglebar,      {0} },
