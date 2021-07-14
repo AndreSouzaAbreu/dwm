@@ -369,10 +369,16 @@ applyrules(Client *c)
             c->isfloating = r->isfloating;
             c->noswallow  = r->noswallow;
             c->tags |= r->tags;
+
+            if (strcmp(class, FLOATCLASS) == 0) {
+                c->isfloating = 1;
+            }
+
             if ((r->tags & SPTAGMASK) && r->isfloating) {
                 c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
                 c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
             }
+
             if (c->isfloating && r->floatingPositionsEnabled) {
               if (r->floatX >= 0 && r->floatX < 100) {
                 c->x = (r->floatX * c->mon->mw)/100;
@@ -387,6 +393,14 @@ applyrules(Client *c)
                 c->h = (r->floatH * c->mon->mh)/100;
               }
             }
+
+            if (strcmp(class, FLOATCENTERCLASS) == 0)
+            {
+              c->isfloating = 1;
+              c->x = c->mon->wx + ((c->mon->ww - c->w - c->bw*2) / 2);
+              c->y = c->mon->wy + ((c->mon->wh - c->h - c->bw*2) / 2);
+            }
+
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
                 c->mon = m;
@@ -1475,13 +1489,13 @@ movethrow(const Arg *arg)
         default:
             return;
     }
-	resize(c, nx, ny, nw, nh, True);
+  resize(c, nx, ny, nw, nh, True);
   c->sfy = c->y;
   c->sfx = c->x;
   c->sfw = c->w;
   c->sfh = c->h;
   c->wasfloating = 1;
-   XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, nw/2, nh/2);
+  XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, nw/2, nh/2);
 }
 
 Client *

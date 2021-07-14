@@ -1,13 +1,20 @@
-/* Constants */
+/** CONSTANTS ***/
+
+/* universal modifier*/
 #define MODKEY Mod4Mask
+
+/* programs */
 #define TERMINAL "termite"
-#define FLOATCLASS "floating"
 #define BROWSER "qutebrowser"
+
+/* classes for user-defined rules */
+#define FLOATCLASS "floating"
+#define FLOATCENTERCLASS "floatcenter"
 
 /* appearance */
 static unsigned int borderpx  = 3;    /* border pixel of windows */
 static unsigned int snap      = 32;   /* snap pixel */
-static int swallowfloating    = 0;    /* 1 means swallow floating windows by default */
+static int swallowfloating    = 1;    /* 1 means swallow floating windows by default */
 static int showbar            = 1;    /* 0 means no bar */
 static int topbar             = 1;    /* 0 means bottom bar */
 static int attachbelow        = 1;    /* 1 means attach at the end */
@@ -32,32 +39,45 @@ typedef struct {
   const void *cmd;
 } Sp;
 
-const char spcmd1n[] = "sp_terminal_small";
-const char spcmd2n[] = "sp_termimal";
-const char spcmd3n[] = "sp_coinmarket";
-const char *spcmd1[] = { TERMINAL, "--name", spcmd1n };
-const char *spcmd2[] = { TERMINAL, "--name", spcmd2n };
-const char *spcmd3[] = { TERMINAL, "--name", spcmd3n, "-e", "coins -c"};
+const char spcmd1n[] = "sp_terminal";
+const char spcmd2n[] = "sp_termimal_tiny";
+const char spcmd3n[] = "sp_cointop";
+const char *spcmd1[] = { TERMINAL, "--class", spcmd1n };
+const char *spcmd2[] = { TERMINAL, "--class", spcmd2n };
+const char *spcmd3[] = { TERMINAL, "--class", spcmd3n, "-e", "coins -c"};
 static Sp scratchpads[] = {
-  /* name    command */
+  /* name   command */
   { spcmd1n, spcmd1 },
   { spcmd2n, spcmd2 },
   { spcmd3n, spcmd3 },
 };
 
-/* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
-/* rules */
 static const Rule rules[] = {
-  /* class       instance title  tags mask  isfloating isterminal noswallow  monitor usecoords  cords x,y,w,h */
-  { "Termite",   NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
-  { "St"     ,   NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
-  { "Alacritty", NULL,    NULL,  0,         0,         1,         0,         -1,     0,         0,0,0,0},
-  { FLOATCLASS,  NULL,    NULL,  0,         1,         1,         0,         -1,     0,         0,0,0,0},
-  { NULL,        spcmd1n, NULL,  SPTAG(0),  1,         1,         0,         -1,     0,         0,0,0,0},
-  { NULL,        spcmd2n, NULL,  SPTAG(1),  1,         1,         0,         -1,     1,         0.5,84,99,15},
-  { NULL,        spcmd3n, NULL,  SPTAG(2),  1,         1,         0,         -1,     1,         35,60,65,40},
+  /* class instance title tagsmask isfloating isterminal noswallow monitor usecoords x,y,w,h */
+
+  /* rules for terminal */
+  { "Termite",   NULL,    NULL,  0, 0, 1, 0, -1, 0, 0,0,0,0},
+  { "St"     ,   NULL,    NULL,  0, 0, 1, 0, -1, 0, 0,0,0,0},
+  { "Alacritty", NULL,    NULL,  0, 0, 1, 0, -1, 0, 0,0,0,0},
+
+  /* some special rules */
+  {FLOATCLASS,       NULL, NULL, 0, 1, 0, 0, -1, 0, 0,0,0,0},
+  {FLOATCENTERCLASS, NULL, NULL, 0, 1, 0, 0, -1, 0, 0,0,0,0},
+
+  /* programs */
+  { "Pavucontrol",   NULL, NULL, 0, 1, 0, 0, -1, 1, 25,25,50,50},
+  { "Zathura",       NULL, NULL, 0, 1, 0, 0, -1, 1, 10,10,80,80},
+  { "R_x11",         NULL, NULL, 0, 1, 0, 1, -1, 1, 25,25,50,50},
+  { "Ranger",        NULL, NULL, 0, 1, 0, 0, -1, 1, 10,10,80,80},
+  { "GNU Octave",    NULL, NULL, 0, 1, 0, 1, -1, 1, 25,25,50,50},
+  { "Chrome",        NULL, NULL, 0, 1, 0, 0, -1, 1, 10,15,70,80},
+
+  /* rules for scratchpads */
+  { spcmd1n, NULL,  NULL,  SPTAG(0), 1, 1, 0, -1, 1, 10,9,80,82},
+  { spcmd2n, NULL,  NULL,  SPTAG(1), 1, 1, 0, -1, 1, 0.5,85,99,14},
+  { spcmd3n, NULL,  NULL,  SPTAG(2), 1, 1, 0, -1, 1, 35,60,65,40},
 };
 
 /* layout(s) */
@@ -191,7 +211,7 @@ static Key keys[] = {
 
   /* commands */
   { MODKEY,        XK_Return,  spawn,  SHCMD(TERMINAL) },
-  { MODKEY,             XK_v,  spawn,  SHCMD(TERMINAL " -e vim") },
+  { MODKEY,             XK_v,  spawn,  SHCMD(TERMINAL " -e $EDITOR") },
   { MODKEY,             XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
 
