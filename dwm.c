@@ -161,6 +161,7 @@ typedef struct {
     int monitor;
     int floatingPositionsEnabled;
     float floatX, floatY, floatW, floatH;
+    int floatcenter;
 } Rule;
 
 /* Xresources preferences */
@@ -370,16 +371,13 @@ applyrules(Client *c)
             c->noswallow  = r->noswallow;
             c->tags |= r->tags;
 
-            if (strcmp(class, FLOATCLASS) == 0) {
-                c->isfloating = 1;
-            }
-
             if ((r->tags & SPTAGMASK) && r->isfloating) {
                 c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
                 c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
             }
 
-            if (c->isfloating && r->floatingPositionsEnabled) {
+            if (c->isfloating && r->floatingPositionsEnabled)
+            {
               if (r->floatX >= 0 && r->floatX < 100) {
                 c->x = (r->floatX * c->mon->mw)/100;
               }
@@ -394,7 +392,7 @@ applyrules(Client *c)
               }
             }
 
-            if (strcmp(class, FLOATCENTERCLASS) == 0)
+            if (r->floatcenter == 1)
             {
               c->isfloating = 1;
               c->x = c->mon->wx + ((c->mon->ww - c->w - c->bw*2) / 2);
@@ -402,8 +400,9 @@ applyrules(Client *c)
             }
 
             for (m = mons; m && m->num != r->monitor; m = m->next);
-            if (m)
+            if (m) {
                 c->mon = m;
+            }
         }
     }
     if (ch.res_class)

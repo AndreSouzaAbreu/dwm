@@ -6,3 +6,5 @@
  util.o
  dwm.o
  drw.o
+ *.o
+ tags

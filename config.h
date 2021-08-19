@@ -4,7 +4,7 @@
 #define MODKEY Mod4Mask
 
 /* programs */
-#define TERMINAL "termite"
+#define TERMINAL "alacritty"
 #define BROWSER "qutebrowser"
 
 /* classes for user-defined rules */
@@ -44,7 +44,7 @@ const char spcmd2n[] = "sp_termimal_tiny";
 const char spcmd3n[] = "sp_cointop";
 const char *spcmd1[] = { TERMINAL, "--class", spcmd1n };
 const char *spcmd2[] = { TERMINAL, "--class", spcmd2n };
-const char *spcmd3[] = { TERMINAL, "--class", spcmd3n, "-e", "coins -c"};
+const char *spcmd3[] = { TERMINAL, "--class", spcmd3n, "-e", "coins", "-c"};
 static Sp scratchpads[] = {
   /* name   command */
   { spcmd1n, spcmd1 },
@@ -55,29 +55,35 @@ static Sp scratchpads[] = {
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 static const Rule rules[] = {
-  /* class instance title tagsmask isfloating isterminal noswallow monitor usecoords x,y,w,h */
+  /* class instance title tagsmask isfloating isterminal noswallow monitor useCustomGeometry x,y,w,h floatcenter*/
 
-  /* rules for terminal */
-  { "Termite",   NULL,    NULL,  0, 0, 1, 0, -1, 0, 0,0,0,0},
-  { "St"     ,   NULL,    NULL,  0, 0, 1, 0, -1, 0, 0,0,0,0},
-  { "Alacritty", NULL,    NULL,  0, 0, 1, 0, -1, 0, 0,0,0,0},
+  /* enable swallow feature for terminal programs */
+  { "Termite",   NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { "St"     ,   NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { "Alacritty", NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
 
   /* some special rules */
-  {FLOATCLASS,       NULL, NULL, 0, 1, 0, 0, -1, 0, 0,0,0,0},
-  {FLOATCENTERCLASS, NULL, NULL, 0, 1, 0, 0, -1, 0, 0,0,0,0},
+  { "termfloatcenter", NULL, NULL, 0, 1, 1, 0, -1, 1,-1,-1,90,79, 1},
+  { NULL, "termfloatcenter", NULL, 0, 1, 1, 0, -1, 1,-1,-1,90,79, 1},
 
-  /* programs */
-  { "Pavucontrol",   NULL, NULL, 0, 1, 0, 0, -1, 1, 25,25,50,50},
-  { "Zathura",       NULL, NULL, 0, 1, 0, 0, -1, 1, 10,10,80,80},
-  { "R_x11",         NULL, NULL, 0, 1, 0, 1, -1, 1, 25,25,50,50},
-  { "Ranger",        NULL, NULL, 0, 1, 0, 0, -1, 1, 10,10,80,80},
-  { "GNU Octave",    NULL, NULL, 0, 1, 0, 1, -1, 1, 25,25,50,50},
-  { "Chrome",        NULL, NULL, 0, 1, 0, 0, -1, 1, 10,15,70,80},
+  /* set dimensions and positions of some programs */
+  { "Pavucontrol",   NULL, NULL, 0, 1, 0, 0, -1, 1,25,25,50,50 ,0},
+  { "Zathura",       NULL, NULL, 0, 1, 0, 0, -1, 1,10,10,80,80, 0},
+  { "Ranger",        NULL, NULL, 0, 1, 0, 0, -1, 1,10,10,80,80, 0},
+
+  /* float center some programs */
+  { "Sxiv",          NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
+  { "R_x11",         NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
+  { "GNU Octave",    NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
+  { "Chrome",        NULL, NULL, 0, 1, 0, 0, -1, 0,0,0,0,0, 1},
 
   /* rules for scratchpads */
-  { spcmd1n, NULL,  NULL,  SPTAG(0), 1, 1, 0, -1, 1, 10,9,80,82},
-  { spcmd2n, NULL,  NULL,  SPTAG(1), 1, 1, 0, -1, 1, 0.5,85,99,14},
-  { spcmd3n, NULL,  NULL,  SPTAG(2), 1, 1, 0, -1, 1, 35,60,65,40},
+  { spcmd1n, NULL,  NULL,  SPTAG(0), 1, 1, 0, -1, 1,-1,-1,90,79,  1},
+  { spcmd2n, NULL,  NULL,  SPTAG(1), 1, 1, 0, -1, 1,0.5,85,99,14, 0},
+  { spcmd3n, NULL,  NULL,  SPTAG(2), 1, 1, 0, -1, 1,35,60,64,39,  0},
+  { NULL, spcmd1n,  NULL,  SPTAG(0), 1, 1, 0, -1, 1,-1,-1,90,79,  1},
+  { NULL, spcmd2n,  NULL,  SPTAG(1), 1, 1, 0, -1, 1,0.5,85,99,14, 0},
+  { NULL, spcmd3n,  NULL,  SPTAG(2), 1, 1, 0, -1, 1,35,60,64,39,  0},
 };
 
 /* layout(s) */
@@ -211,12 +217,13 @@ static Key keys[] = {
 
   /* commands */
   { MODKEY,        XK_Return,  spawn,  SHCMD(TERMINAL) },
-  { MODKEY,             XK_v,  spawn,  SHCMD(TERMINAL " -e $EDITOR") },
+  { MODKEY,             XK_v,  spawn,  SHCMD("nvim-gui") },
+  { MODKEY|ShiftMask,   XK_v,  spawn,  SHCMD("nvim-gui --center") },
   { MODKEY,             XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
 
   /* menus */
-  { MODKEY,             XK_d,  spawn,  SHCMD("menu-launcher") },
+  { MODKEY,             XK_d,  spawn,  SHCMD("menu-applications") },
   { MODKEY,             XK_c,  spawn,  SHCMD("menu-clipboard") },
   { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
   { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
