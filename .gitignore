@@ -1,10 +1,6 @@
- *.orig
- *.rej
- larbs.pdf
- patches
- dwm
- util.o
- dwm.o
- drw.o
- *.o
- tags
+*.orig
+*.rej
+patches
+dwm
+*.o
+tags
