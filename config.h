@@ -21,7 +21,8 @@ static int attachbelow        = 1;    /* 1 means attach at the end */
 static int resizehints        = 1;    /* 1 means respect size hints in tiled resizals */
 static int nmaster            = 1;    /* default number of clients in master area */
 static float mfact            = 0.84; /* factor of master area size [0.05..0.95] */
-static char *fonts[]          = { "monospace:size=14" };
+static char *fonts[]          = { "SourceCodePro:size=12" };
+/* static char *fonts[]          = { "monospace:size=14" }; */
 static char normbgcolor[]     = "#222222";
 static char normbordercolor[] = "#444444";
 static char normfgcolor[]     = "#bbbbbb";
@@ -39,12 +40,12 @@ typedef struct {
   const void *cmd;
 } Sp;
 
-const char spcmd1n[] = "sp_terminal";
-const char spcmd2n[] = "sp_termimal_tiny";
-const char spcmd3n[] = "sp_cointop";
-const char *spcmd1[] = { TERMINAL, "--class", spcmd1n };
-const char *spcmd2[] = { TERMINAL, "--class", spcmd2n };
-const char *spcmd3[] = { TERMINAL, "--class", spcmd3n, "-e", "coins", "-c"};
+const char spcmd1n[] = "spd1";
+const char spcmd2n[] = "spd2";
+const char spcmd3n[] = "spd3";
+const char *spcmd1[] = { "tabbed", "-n", spcmd1n, "-c", "alacritty", "--embed" };
+const char *spcmd2[] = { "tabbed", "-n", spcmd2n, "-c", "alacritty", "--embed" };
+const char *spcmd3[] = { "alacritty", "--class", spcmd3n, "-e", "coins", "-c"};
 static Sp scratchpads[] = {
   /* name   command */
   { spcmd1n, spcmd1 },
@@ -62,20 +63,25 @@ static const Rule rules[] = {
   { "St"     ,   NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
   { "Alacritty", NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
 
-  /* some special rules */
+  { NULL, "Termite",      NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { NULL, "St"     ,      NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { NULL, "Alacritty",    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+
+  /* some special rules for terminal programms*/
   { "termfloatcenter", NULL, NULL, 0, 1, 1, 0, -1, 1,-1,-1,90,79, 1},
+  { "Ranger",          NULL, NULL, 0, 1, 0, 0, -1, 1,10,10,80,80, 0},
   { NULL, "termfloatcenter", NULL, 0, 1, 1, 0, -1, 1,-1,-1,90,79, 1},
+  { NULL,          "Ranger", NULL, 0, 1, 0, 0, -1, 1,10,10,80,80, 0},
 
   /* set dimensions and positions of some programs */
   { "Pavucontrol",   NULL, NULL, 0, 1, 0, 0, -1, 1,25,25,50,50 ,0},
   { "Zathura",       NULL, NULL, 0, 1, 0, 0, -1, 1,10,10,80,80, 0},
-  { "Ranger",        NULL, NULL, 0, 1, 0, 0, -1, 1,10,10,80,80, 0},
+  { "mpv",           NULL, NULL, 0, 1, 0, 0, -1, 1,10,10,80,80, 0},
 
   /* float center some programs */
   { "Sxiv",          NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
   { "R_x11",         NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
   { "GNU Octave",    NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
-  { "Chrome",        NULL, NULL, 0, 1, 0, 0, -1, 0,0,0,0,0, 1},
 
   /* rules for scratchpads */
   { spcmd1n, NULL,  NULL,  SPTAG(0), 1, 1, 0, -1, 1,-1,-1,90,79,  1},
@@ -216,10 +222,10 @@ static Key keys[] = {
   { MODKEY|AltMask,     XK_p,      setcfact,       {.f =  0.00} },
 
   /* commands */
-  { MODKEY,        XK_Return,  spawn,  SHCMD(TERMINAL) },
   { MODKEY,             XK_v,  spawn,  SHCMD("nvim-gui") },
   { MODKEY|ShiftMask,   XK_v,  spawn,  SHCMD("nvim-gui --center") },
-  { MODKEY,             XK_e,  spawn,  SHCMD(TERMINAL " -e neomutt") },
+  { MODKEY,             XK_e,  spawn,  SHCMD("alacritty -e neomutt") },
+  { MODKEY,        XK_Return,  spawn,  SHCMD("alacritty") },
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
 
   /* menus */
