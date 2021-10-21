@@ -2474,30 +2474,55 @@ updatestatus(void)
 void
 updatetitle(Client *c)
 {
-	int len, i, newlen;
+	int len, i, newlen, lentmp;
 	char *newname;
 	if (!gettextprop(c->win, netatom[NetWMName], c->name, sizeof c->name)) {
 		gettextprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
 	}
+
 	len = strlen(c->name);
-	newlen = 0;
+  newlen = lentmp = 0;
+  if (len > 0 && (c->name[0] == '/' || c->name[0] == '~'))
+  {
+    lentmp = len;
+    len = 0;
+  }
+
 	for (i = len - 1; i >= 0; i--) {
 		if (c->name[i] == '-') {
-			if (i + 1 < len && c->name[i + 1] == ' ') {
-				newlen -= 1;
-			}
+			if (i + 1 < len && c->name[i + 1] == ' ') newlen -= 1;
 			break;
 		}
 		newlen += 1;
 	}
-	newname = malloc((newlen + 1) * sizeof(char));
-	for (i = 0; i < newlen; i++) {
-		newname[i] = c->name[len - newlen + i];
-	}
-	newname[newlen] = '\0';
-	strcpy(c->name, newname);
-	free(newname);
-	if (c->name[0] == '\0') {/* hack to mark broken clients */
+
+  if (lentmp > 0)
+  {
+    int maxlength = 40, slashes = 0;
+    newlen = 0;
+    len = lentmp;
+    for (i = len-1; (i >= 0) && (len - i <= maxlength || slashes == 0); i--)
+    {
+      if (c->name[i] == '/'|| i == 0)
+      {
+        newlen = len-i-1;
+        slashes++;
+      }
+    }
+  }
+
+  if (newlen > 0)
+  {
+    newname = malloc((newlen + 1) * sizeof(char));
+    for (i = 0; i < newlen; i++)
+      newname[i] = c->name[len - newlen + i];
+    newname[newlen] = '\0';
+    strcpy(c->name, newname);
+    free(newname);
+  }
+
+  /* hack to mark broken clients */
+	if (c->name[0] == '\0') {
 		strcpy(c->name, broken);
 	}
 }
