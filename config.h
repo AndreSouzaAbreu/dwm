@@ -18,10 +18,10 @@ static int swallowfloating    = 1;    /* 1 means swallow floating windows by def
 static int showbar            = 1;    /* 0 means no bar */
 static int topbar             = 1;    /* 0 means bottom bar */
 static int attachbelow        = 1;    /* 1 means attach at the end */
-static int resizehints        = 1;    /* 1 means respect size hints in tiled resizals */
+static int resizehints        = 0;    /* 1 means respect size hints in tiled resizals */
 static int nmaster            = 1;    /* default number of clients in master area */
-static float mfact            = 0.84; /* factor of master area size [0.05..0.95] */
-static char *fonts[]          = { "SourceCodePro:size=12" };
+static float mfact            = 0.80; /* factor of master area size [0.05..0.95] */
+static char *fonts[]          = { "LiberationMono:size=13" };
 /* static char *fonts[]          = { "monospace:size=14" }; */
 static char normbgcolor[]     = "#222222";
 static char normbordercolor[] = "#444444";
@@ -40,12 +40,13 @@ typedef struct {
   const void *cmd;
 } Sp;
 
-const char spcmd1n[] = "spd1";
-const char spcmd2n[] = "spd2";
-const char spcmd3n[] = "spd3";
-const char *spcmd1[] = { "tabbed", "-n", spcmd1n, "-c", "alacritty", "--embed" };
-const char *spcmd2[] = { "tabbed", "-n", spcmd2n, "-c", "alacritty", "--embed" };
-const char *spcmd3[] = { "alacritty", "--class", spcmd3n, "-e", "coins", "-c"};
+const char spcmd1n[] = "terminal <>";
+const char spcmd2n[] = "terminal ><";
+const char spcmd3n[] = "coin market";
+const char *spcmd1[] = { "xfce4-terminal", "-T", spcmd1n, };
+const char *spcmd2[] = { "xfce4-terminal", "-T", spcmd2n, };
+const char *spcmd3[] = { "xfce4-terminal", "-T", spcmd3n, "-e", "coins -c" };
+
 static Sp scratchpads[] = {
   /* name   command */
   { spcmd1n, spcmd1 },
@@ -59,9 +60,10 @@ static const Rule rules[] = {
   /* class instance title tagsmask isfloating isterminal noswallow monitor useCustomGeometry x,y,w,h floatcenter*/
 
   /* enable swallow feature for terminal programs */
-  { "Termite",   NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
-  { "St"     ,   NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
-  { "Alacritty", NULL,    NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { "Termite",   NULL,      NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { "St"     ,   NULL,      NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { "Alacritty", NULL,      NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
+  { "Xfce4-terminal", NULL, NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
 
   { NULL, "Termite",      NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
   { NULL, "St"     ,      NULL,  0, 0, 1, 0, -1, 0,0,0,0,0, 0},
@@ -83,13 +85,16 @@ static const Rule rules[] = {
   { "R_x11",         NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
   { "GNU Octave",    NULL, NULL, 0, 1, 0, 1, -1, 0,0,0,0,0, 1},
 
-  /* rules for scratchpads */
+  /* rules for scratchpads. They affect window name, title, or class */
   { spcmd1n, NULL,  NULL,  SPTAG(0), 1, 1, 0, -1, 1,-1,-1,90,79,  1},
   { spcmd2n, NULL,  NULL,  SPTAG(1), 1, 1, 0, -1, 1,0.5,85,99,14, 0},
   { spcmd3n, NULL,  NULL,  SPTAG(2), 1, 1, 0, -1, 1,35,60,64,39,  0},
   { NULL, spcmd1n,  NULL,  SPTAG(0), 1, 1, 0, -1, 1,-1,-1,90,79,  1},
   { NULL, spcmd2n,  NULL,  SPTAG(1), 1, 1, 0, -1, 1,0.5,85,99,14, 0},
   { NULL, spcmd3n,  NULL,  SPTAG(2), 1, 1, 0, -1, 1,35,60,64,39,  0},
+  { NULL, NULL,  spcmd1n,  SPTAG(0), 1, 1, 0, -1, 1,-1,-1,90,79,  1},
+  { NULL, NULL,  spcmd2n,  SPTAG(1), 1, 1, 0, -1, 1,0.5,85,99,14, 0},
+  { NULL, NULL,  spcmd3n,  SPTAG(2), 1, 1, 0, -1, 1,35,60,64,39,  0},
 };
 
 /* layout(s) */
@@ -224,16 +229,18 @@ static Key keys[] = {
   /* commands */
   { MODKEY,             XK_v,  spawn,  SHCMD("nvim-gui") },
   { MODKEY|ShiftMask,   XK_v,  spawn,  SHCMD("nvim-gui --center") },
-  { MODKEY,             XK_e,  spawn,  SHCMD("alacritty -e neomutt") },
-  { MODKEY,        XK_Return,  spawn,  SHCMD("alacritty") },
+  { MODKEY,             XK_e,  spawn,  SHCMD("xfce4-terminal -e neomutt") },
+  { MODKEY,        XK_Return,  spawn,  SHCMD("xfce4-terminal") },
   { MODKEY,             XK_w,  spawn,  SHCMD(BROWSER) },
 
   /* menus */
-  { MODKEY,             XK_d,  spawn,  SHCMD("menu-applications") },
   { MODKEY,             XK_c,  spawn,  SHCMD("menu-clipboard") },
-  { MODKEY,             XK_p,  spawn,  SHCMD("menu-password") },
+  { MODKEY,             XK_a,  spawn,  SHCMD("menu-classes") },
+  { MODKEY,             XK_d,  spawn,  SHCMD("menu-launcher") },
   { MODKEY|ControlMask, XK_l,  spawn,  SHCMD("menu-lorem") },
+  { MODKEY|ShiftMask,   XK_m,  spawn,  SHCMD("menu-music") },
   { MODKEY|ShiftMask,   XK_p,  spawn,  SHCMD("menu-otp") },
+  { MODKEY,             XK_p,  spawn,  SHCMD("menu-pass") },
 
   /* lock screen */
   { MODKEY|ShiftMask,   XK_l,  spawn,  SHCMD("screen-locker") },
